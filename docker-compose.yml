@@ -1,0 +1,37 @@
+version: '3'
+
+networks:
+  pep-net:
+    driver: bridge
+
+volumes:
+    mongo_data: {}
+
+services:
+
+  mongo:
+    image: mongo:$MONGO_VERSION
+    restart: unless-stopped
+    container_name: pep-server-mongo
+    ports:
+      - 27017:27017
+    networks:
+      - pep-net
+    volumes:
+      - mongo_data:/data/db
+    labels:
+      org.label-schema.group: "pep"
+
+  pep-api-server:
+    build: .
+    image: pep-api-server:$PEP_SERVER_VERSION
+    container_name: pep-api-server
+    restart: unless-stopped
+    ports:
+      - 5151:5151
+    networks:
+      - pep-net
+    labels:
+      org.label-schema.group: "pep"
+    depends_on:
+      - mongo

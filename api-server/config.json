@@ -1,0 +1,7 @@
+{
+    "mongo_db_uri": "mongodb://pep-server-mongo:27017/mbed_manufacturing_db",
+    "port": "5151",
+    "logRequests": false,
+    "logLevel": 2,
+    "save_mbed_cbor": false
+}
