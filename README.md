@@ -149,16 +149,18 @@ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep --help
     ```
 
 1. Install the `pep` cli on the gateway and run
-    1. `$ pep create-one-identity -s <serial_number> -w <hardware_version>`
+    1. `$ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep create-one-identity -s <serial_number> -w <hardware_version>`
         <img src="./assets/pep-create-one-identity.png" width="927" height="550"/>
 
-    1. `$ pep get-one-identity -s <serial_number> -i <gateway_ip> -p <fcc_port>`
+    1. `$ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep get-one-identity -s <serial_number> -i <gateway_ip> -p <fcc_port>`
         <img src="./assets/pep-get-one-identity.png" width="927" height="464"/>
 
 1. factory-configurator-client-example creates a `pal` folder and get-one-identity creates `identity.json` file.
 
     1. Place and rename the `pal` folder to the location specified by compile time flag `PAL_FS_MOUNT_POINT_PRIMARY` of mbed-edge.
     1. Place `identity.json` to the location specified by platform_readers/identity_path of maestro configuration file.
+
+1. Reboot the gateway.
 
 
 ## Troubleshooting
