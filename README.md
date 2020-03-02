@@ -1,32 +1,32 @@
 # pelion-edge-provisioner (pep)
 
-It provisions the gateway for Pelion Edge solution to successfully and securely communicate with cloud. This tool hosts REST APIs and mongo database which helps create new and also store gateway-identites. The tool is designed to run on the factory floor and it provisions the gateways in production mode.
+The Pelion Edge provisioning tool provisions the gateway, so Pelion Edge can successfully and securely communicate with the cloud. This tool hosts REST APIs and a mongo database, which helps create and store gateway identities. The tool is designed to run on the factory floor, and it provisions the gateways in production mode.
 
 <img src="./assets/pep-arch.png" width="650" height="550"/>
 
 ## Prerequisite
 
-This tools wraps [Factory Configurator Utility (FCU)](https://www.pelion.com/docs/device-management/current/provisioning-process/index.html). Thus in order to install this tool, following files are required -
+This tools wraps [Factory Configurator Utility (FCU)](https://www.pelion.com/docs/device-management/current/provisioning-process/index.html). To install this tool, the following files are required:
 
 1. factory_configurator_utility.zip
 
-    Arm licenses FCU to Device Management customers that manufacture connected devices. Please [contact us](https://cloud.mbed.com/contact) for more information. Authorized customers can download the tool and documentation from the [Device Management Portal](https://portal.mbedcloud.com/login).
+   Arm licenses FCU to Device Management customers that manufacture connected devices. Please [contact us](https://cloud.mbed.com/contact) for more information. Authorized customers can download the tool and documentation from the [Device Management Portal](https://portal.mbedcloud.com/login).
 
 1. fcu.yml
 
-    Once the above archive is downloaded, follow the documentation on how to configure fcu - `factory_configurator_utility.zip/docs/provisioning-fcu/configuring-fcu.html`. The default `fcu.yml` can be found here - `factory_configurator_utility.zip/config/fcu.yml`
+   Follow the documentation on how to configure FCU: `factory_configurator_utility.zip/docs/provisioning-fcu/configuring-fcu.html`. You can find the default `fcu.yml` at `factory_configurator_utility.zip/config/fcu.yml`.
 
 1. Certificate authority
 
-    Similarly, in order to setup a certificate authority, follow the documentation - `factory_configurator_utility.zip/docs/provisioning-fcu/setting-up-a-certificate-authority.html`.
+   To set up a certificate authority, follow the documentation: `factory_configurator_utility.zip/docs/provisioning-fcu/setting-up-a-certificate-authority.html`.
 
 1. Firmware update certificate
 
-    Note: This step is optional unless firmware update capability is required.
+   Note: This step is optional unless firmware update capability is required.
 
-    Follow "Create an authentication certificate" section of [document](https://www.pelion.com/docs/device-management/current/updating-firmware/setting-up.html) to create a firmware update certificate.
+   Follow the ["Create an authentication certificate" section of the Device Management documentation](https://www.pelion.com/docs/device-management/current/updating-firmware/setting-up.html#create-an-authentication-certificate) to create a firmware update certificate.
 
-1. Place all of the above files in a folder in this structure. Note: Remember to place this folder in this repo directory, as the contents of this repo are copied to the docker container.
+1. Place all of the above files in a folder in this structure. Note: Place this folder in this repository directory because the contents of this repository are copied to the Docker container.
 
     ```
     ./fcu_config_dir
@@ -38,7 +38,7 @@ This tools wraps [Factory Configurator Utility (FCU)](https://www.pelion.com/doc
     --- --- ca.crt
     ```
 
-Manually run the validator `./fcu-config-validator.sh` on fcu_config_dir to verify if the respective files are in above structure.
+Manually run the validator `./fcu-config-validator.sh` on fcu_config_dir to verify respective files are in the above structure.
 
 ## Installation
 
@@ -51,13 +51,14 @@ The versions of various services used in the docker-compose are listed in the en
 For persistent data, docker volume `mongo_data` is created.
 
 #### Build
+
 These docker-compose commands have been tested with docker-compose version 1.25.0
 
 ```
 $ docker-compose build --build-arg fcu_config=<fcu_config_relative_dir_path>
 ```
-This will also install the factory_configuration_utility in api-server image. Install steps used in this process are parallely followed as listed in the official fcu documentation here - `factory_configurator_utility.zip/docs/provisioning-fcu/index.html`
 
+This also installs the factory_configuration_utility in api-server image. Install steps used in this process are parallely followed as listed in the official FCU documentation at `factory_configurator_utility.zip/docs/provisioning-fcu/index.html`.
 
 #### Run
 
@@ -66,25 +67,27 @@ docker-compose up -d
 ```
 
 #### Verify
-Verify mongo and api-server containers are running -
+
+Verify mongo and api-server containers are running:
 
 ```
 docker-compose ps
 ```
 
-If a container is restarting, view the logs in order to troubleshoot -
+If a container is restarting, view the logs to troubleshoot:
 
 ```
 docker-compose logs
 ```
 
-View api-server logs -
+View api-server logs:
 
 ```
 docker logs -f pep-api-server
 ```
 
-Verify mongo_data volume was created successfully -
+Verify mongo_data volume was created successfully:
+
 ```
 docker volume inspect pelion-edge-provisioner_mongo_data
 ```
@@ -93,92 +96,96 @@ docker volume inspect pelion-edge-provisioner_mongo_data
 
 ### Install
 
-This will create a symlink in the global node_modules folder
+This creates a symlink in the global node_modules folder:
+
 ```
 npm link
 ```
 
-Run
+Run:
+
 ```
 pep --help
 ```
 
 #### Alternatively
+
 ```
 npm install
 ```
 
-Run
+Run:
+
 ```
 ./cli/pep.js --help
 ```
 
+Enable debug mode:
 
-Enable debug mode
 ```
 DEBUG=* pep --help
 ```
 
-
-If you are runnning pep cli on different machine than the pep-api-server docker container, then change PEP_SERVER_URL like this
+If you are runnning pep CLI on a different machine than the pep-api-server docker container, change PEP_SERVER_URL:
 
 ```
 PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep --help
 ```
 
-
 ## Typical gateway provision flow
 
 1. Run factory-configurator-client-example on the gateway
 
-    Cross-compile latest version of [fcc-example](https://github.com/ARMmbed/factory-configurator-client-example) for your gateway platform. Instruction to compile fcc-example can be found here - `factory_configurator_utility.zip/docs/ft-demo/building-demo.html`
+    Cross-compile latest version of [fcc-example](https://github.com/ARMmbed/factory-configurator-client-example) for your gateway platform. You can find instructions to compile the fcc-example at `factory_configurator_utility.zip/docs/ft-demo/building-demo.html`.
 
-    Run -
+    Run:
+    
     ```
     $ ./factory-configurator-client-example.elf
     ```
 
-    To change the interface name -
+    To change the interface name:
+    
     ```
     ETHERNET_LINUX_IFACE_NAME=eth0 ./factory-configurator-client-example.elf
     ```
 
-    To change the entropy source -
+    To change the entropy source:
+    
     ```
     export ENTROPYSOURCE=<file-name>
     ```
 
-1. Install the `pep` cli on the gateway and run
+1. Install the `pep` CLI on the gateway, and run:
     1. `$ pep create-one-identity -s <serial_number> -w <hardware_version>`
         <img src="./assets/pep-create-one-identity.png" width="927" height="550"/>
 
     1. `$ pep get-one-identity -s <serial_number> -i <gateway_ip> -p <fcc_port>`
         <img src="./assets/pep-get-one-identity.png" width="927" height="464"/>
 
-1. factory-configurator-client-example creates a `pal` folder and get-one-identity creates `identity.json` file.
+1. factory-configurator-client-example creates a `pal` folder, and get-one-identity creates `identity.json` file.
 
     1. Place and rename the `pal` folder to the location specified by compile time flag `PAL_FS_MOUNT_POINT_PRIMARY` of mbed-edge.
     1. Place `identity.json` to the location specified by platform_readers/identity_path of maestro configuration file.
 
-
 ## Troubleshooting
 
-1. On gateway when compiling factory-configurator-client-example if you get error
+1. When compiling factory-configurator-client-example, if you see this error on the gateway:
 
     ```
     ImportError: No module named site
     ```
 
-    then try unsetting the python path
+    Try unsetting the Python path:
 
     ```
     unset PYTHONPATH
     unset PYTHONHOME
     ```
 
-1. If mbed-cli is not installed, follow these [instructions](https://os.mbed.com/docs/mbed-os/v5.9/tutorials/quick-start-offline.html)
+1. If Arm Mbed CLI is not installed, follow these [instructions](https://os.mbed.com/docs/mbed-os/latest/tutorials/quick-start-offline.html)
 
-1. To install factory-configurator-client-example on gateway without mbed-cli, follow steps -
+1. To install factory-configurator-client-example on the gateway without Mbed CLI:
 
     ```
     $ git clone https://github.com/ARMmbed/factory-configurator-client-example
@@ -190,8 +197,8 @@ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep --help
     $ ./out/Release/factory-configurator-client-example.elf
     ```
 
-1. If you get `bad-request` error on mbed-edge then mbed-edge and factory-configurator-client-example have been compiled with different entropy source.
+1. If you get `bad-request` error on mbed-edge, then mbed-edge and factory-configurator-client-example have been compiled with different entropy source.
 
-1. If you get `Connection error` on mbed-edge then make sure enrollment_id is uploaded successfully on Pelion cloud and also the CA certificate is uploaded.
-    1. Steps on how to upload Certificate using Device Management Portal can be found [here](https://www.pelion.com/docs/device-management/current/provisioning-process/managing-ca-certificates.html)
-    1. Steps on how to upload enrollment identity can be found [here](https://www.pelion.com/docs/device-management/current/connecting/device-ownership-first-to-claim-by-enrollment-list.html)
+1. If you get `Connection error` on mbed-edge, make sure enrollment_id is uploaded successfully on Pelion cloud and that the CA certificate is uploaded.
+    1. You can find steps on how to upload Certificate using Device Management Portal in the [Device Management documentation](https://www.pelion.com/docs/device-management/current/provisioning-process/managing-ca-certificates.html)
+    1. You can find steps on how to upload the enrollment identity in the [Device Management documentation](https://www.pelion.com/docs/device-management/current/connecting/device-ownership-first-to-claim-by-enrollment-list.html)
