@@ -2,25 +2,20 @@
   "name": "pelion-edge-provisioner",
   "version": "2.0.0",
   "description": "It provisions the gateway for Pelion Edge solution to successfully and securely communicate with cloud",
-  "main": "./cli/pep.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/armPelionEdge/edge-gw-provisioning-tool.git"
+    "url": "git+https://github.com/armPelionEdge/pelion-edge-provisioner.git"
   },
   "bugs": {
-    "url": "https://github.com/armPelionEdge/edge-gw-provisioning-tool/issues"
+    "url": "https://github.com/armPelionEdge/pelion-edge-provisioner/issues"
   },
-  "homepage": "https://github.com/armPelionEdge/edge-gw-provisioning-tool#readme",
-  "bin": {
-    "pep": "./cli/pep.js"
-  },
+  "homepage": "https://github.com/armPelionEdge/pelion-edge-provisioner#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
     "colors": "^1.1.2",
-    "commander": "^4.0.1",
     "express": "^4.16.2",
     "jsonminify": "^0.4.1",
     "mongoose": "^5.8.4",
