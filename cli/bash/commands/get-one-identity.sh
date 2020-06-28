@@ -23,20 +23,26 @@ fi
 
 . "$PEP_CLI_DIR/common.sh"
 
+API_URL="https://api.us-east-1.mbedcloud.com"
+GW_URL="https://gateways.us-east-1.mbedcloud.com"
+RADIO_CONFIG="00"
+LED_CONFIG="01"
+CATEGORY="production"
+
 cli_help_get_one_identity() {
   echo "
 Usage: pep get-one-identity [<options>]
 
 Options:
-  -a <ip_or_dns>            pelion cloud api url (default: 'https://api.us-east-1.mbedcloud.com')
-  -g <ip_or_dns>            pelion cloud gateway service address (default: 'https://gateways.us-east-1.mbedcloud.com')
+  -a <ip_or_dns>            pelion cloud api url (default: '$API_URL')
+  -g <ip_or_dns>            pelion cloud gateway service address (default: '$GW_URL')
   -s <string_value>         serial number of the gateway
   -w <string_value>         hardware version of the gateway, refer configurations section in
                             $PEP_CLI_DIR/../lib/radioProfile.template.json
   -r <string_value>         radio configuration of the gateway, refer configurations section in
-                            $PEP_CLI_DIR/../lib/radioProfile.template.json (default: '00')
-  -l <string_value>         status led configuration of the gateway (default: '01')
-  -c <string_value>         developer or production (default: 'production')
+                            $PEP_CLI_DIR/../lib/radioProfile.template.json (default: '$RADIO_CONFIG')
+  -l <string_value>         status led configuration of the gateway (default: '$LED_CONFIG')
+  -c <string_value>         developer or production (default: '$CATEGORY')
   -i <ip>                   ip address of the gateway where factory-configurator-client is running
   -p <port_number>          port number at which factory-configurator-client listening
   -v                        verbose
@@ -48,12 +54,6 @@ Options:
 OPTIND=1
 
 QUERY=""
-
-API_URL="https://api.us-east-1.mbedcloud.com"
-GW_URL="https://gateways.us-east-1.mbedcloud.com"
-RADIO_CONFIG="00"
-LED_CONFIG="01"
-CATEGORY="production"
 
 while getopts 'a:g:s:w:r:l:c:i:p:hv' opt "${@:2}"; do
     case "$opt" in
