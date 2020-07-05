@@ -311,8 +311,6 @@ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep-cli --help
     unset PYTHONHOME
     ```
 
-1. If Arm Mbed CLI is not installed, follow these [instructions](https://os.mbed.com/docs/mbed-os/latest/tutorials/quick-start-offline.html)
-
 1. If you get `bad-request` error on mbed-edge, then mbed-edge and factory-configurator-client-example have been compiled with different entropy source.
 
 1. If you get `Connection error` on mbed-edge, then make sure the enrollment identity and the CA certificate has been uploaded successfully to your PDM account.
