@@ -57,11 +57,11 @@ fi
 echo "Copying the fcu.yml provided in the configuration_dir=$FCU_CONFIG_DIR"
 cp $FCU_CONFIG_DIR/fcu.yml $FCU_ARCHIVE_DIR/config/
 
-if [ -d $FCU_CONFIG_DIR/ca ]; then
+if [ -d $FCU_CONFIG_DIR/keystore ]; then
     echo "CA is provided, copying it to fcu keystore"
     mkdir -p $FCU_ARCHIVE_DIR/keystore
-    cp -R $FCU_CONFIG_DIR/ca/ca.crt $FCU_ARCHIVE_DIR/keystore/fcu.crt
-    cp -R $FCU_CONFIG_DIR/ca/private_key.pem $FCU_ARCHIVE_DIR/keystore/fcu_private_key.pem
+    cp -R $FCU_CONFIG_DIR/keystore/CA_cert.pem $FCU_ARCHIVE_DIR/keystore/fcu.crt
+    cp -R $FCU_CONFIG_DIR/keystore/CA_private.pem $FCU_ARCHIVE_DIR/keystore/fcu_private_key.pem
     ls $FCU_ARCHIVE_DIR/keystore
 fi
 

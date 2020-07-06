@@ -61,11 +61,13 @@ To build the `pep-api-server` docker image, the following files are required:
     | time-sync | true |
     | verify-on-device | true |
     | first-to-claim | true |
-    | device-key-generation-mode | by_tool |
-    | vendor-id | 42fa7b48-1a65-43aa-890f-8c704daade54 |
-    | entropy-generation-mode | by_device |
-    | device-certificate | *fill the information as per your organization* |
+    | update-auth-certificate-file | <%= ENV['FCU_RESOURCES_DIR'] %>/update-auth-certificate.der |
+    | vendor-id | '42fa7b48-1a65-43aa-890f-8c704daade54' |
+    | class-id | 'c56f3a62-b52b-4ef6-95a0-db7a6e3b5b21' |
     | device-info | *fill the information as per your organization* |
+    | device-key-generation-mode | by_tool |
+    | device-certificate | *fill the information as per your organization* |
+    | entropy-generation-mode | by_device |
 
 1. Certificate authority
 
@@ -76,6 +78,8 @@ To build the `pep-api-server` docker image, the following files are required:
     Note: As you are creating your own certificate authority, do not populate the X.509 properties in the `certificate-authority`section of the fcu.yml configuration file.
 
     **Upload the CA certificate** - You have to upload this CA certificate to Device Management to allow it to trust the device certificates signed by this CA and then connection to Device Management. Follow [this document](https://www.pelion.com/docs/device-management/current/provisioning-process/managing-ca-certificates.html) to learn about the various ways you can achieve this and also how to manage the lifecycle of the CAs.
+
+    Make sure to select "Enrollment" in the field "How will devices use this certificate".
 
 1. Firmware update authentication certificate (optional)
 
@@ -88,7 +92,7 @@ To build the `pep-api-server` docker image, the following files are required:
     ```
     manifest-tool init -m "<product model identifier>" -V 42fa7b48-1a65-43aa-890f-8c704daade54 -q
     ```
-    You can find the DER formatted update certificate at location  `manifest-tool/.update-certificates/default.der`. Rename it to `update-auth-certificate.der` and place it in the folder mentioned in the next step.
+    You can find the DER formatted update certificate at location  `.update-certificates/default.der`. Rename it to `update-auth-certificate.der` and place it in the folder mentioned in the next step.
 
     Note: To unlock the rich node features, such as gateway logs and the gateway terminal in the Pelion web Portal, pass the command-line parameter -V 42fa7b48-1a65-43aa-890f-8c704daade54 to the manifest tool. Contact the service continuity team at Arm to request they enable Edge gateway features in your Pelion web Portal account. By default, the features are not enabled.
 
@@ -102,8 +106,8 @@ To build the `pep-api-server` docker image, the following files are required:
     --- factory_configurator_utility.zip
     --- update-auth-certificate.der
     --- keystore
-    --- --- private_key.pem
-    --- --- ca.crt
+    --- --- CA_private.pem
+    --- --- CA_cert.pem
     ```
 
 Manually run the validator `./fcu-config-validator.sh` on fcu_config_dir to verify respective files are in the above structure.
@@ -165,7 +169,7 @@ Install the pep-cli to `/usr/local/bin` by creating a symlink -
 
 ```
 cd pelion-edge-provisioner
-ln -s `pwd`/cli/bash/pep.sh /usr/local/bin/pep
+ln -s `pwd`/cli/bash/pep-cli.sh /usr/local/bin/pep-cli
 pep-cli --help
 ```
 
@@ -210,16 +214,22 @@ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep-cli --help
 
 ## Typical production provisioning and onboarding flow
 
-1. Install FCC - Login to the gateway. If `factory-configurator-client-example` is not installed then follow [this document](https://www.pelion.com/docs/device-management-provision/1.2/ft-demo/building-demo.html#native-linux) for the detailed steps. Here are the quick steps which installs the program withou using Mbed CLI. Note: This tool is not supported on macOS, hence if you are running the server on macOS, you will not be able to test pep-cli on the same machine.
+1. Install FCC - Login to the gateway. If `factory-configurator-client-example` is not installed then follow [this document](https://www.pelion.com/docs/device-management-provision/1.2/ft-demo/building-demo.html#native-linux) for the detailed steps. Here are the quick steps which installs the program. For example, on meta-pelion-edge project you can find the pre-compiled binary located at `/wigwag/wwrelay-utils/I2C/factory-configurator-client-armcompiled.elf`
+
+    Note: This tool is not supported on macOS, hence if you are running the server on macOS, you will not be able to test pep-cli on the same machine.
 
     ```
-    git clone https://github.com/ARMmbed/factory-configurator-client-example
+    pip install mbed-cli
+    git clone https://github.com/ARMmbed/factory-configurator-client-example.git
     cd factory-configurator-client-example
-    git clone https://github.com/ARMmbed/mbed-cloud-client
-    cd mbed-cloud-client
-    git checkout $(cat ../mbed-cloud-client.lib | tr -s "#" "\n" | sed -n '2 p')
-    python pal-platform/pal-platform.py fullbuild --target x86_x64_NativeLinux_mbedtls --toolchain GCC --external ./../linux-config.cmake --name factory-configurator-client-example.elf
+    rm -rf mbed-os.lib
+    mbed deploy
+    python pal-platform/pal-platform.py deploy --target=x86_x64_NativeLinux_mbedtls generate
+    cd __x86_x64_NativeLinux_mbedtls
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=./../pal-platform/Toolchain/GCC/GCC.cmake -DEXTERNAL_DEFINE_FILE=./../linux-config.cmake
+    make factory-configurator-client-example.elf
     ```
+
     Binary is located at -
     ```
     ./out/Release/factory-configurator-client-example.elf
@@ -236,7 +246,7 @@ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep-cli --help
     or run this script -
 
     ```
-    ./prepare-for-new-identity.sh
+    ./example-scripts/meta-pelion-edge/prepare-for-new-identity.sh
     ```
 
     You will have to modify the commands or the scripts for your platform.
@@ -264,7 +274,7 @@ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep-cli --help
 1. Fetch new identity - Open another terminal and login to the gateway. Install the `pep-cli` if not already and then run the following command. At minimum you have to pass in the serial number of the gateway, the IP address of the gateway and the TCP port at which FCC is running. Note: There is no schema enforced on the `serial_number`, hence it can be of any length with any alphanumeric and special characters. But it has to be unique, server will not provision 2 gateways with the same serial number.
 
     ```
-    pep-cli get-one-identity -s <serial_number> -i <gateway_ip> -p <fcc_port>
+    PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep-cli get-one-identity -s <serial_number> -i <gateway_ip> -p <fcc_port>
     ```
 
 1. Install new identity - Once the above command runs successfully, the factory-configurator-client-example creates a `pal` folder, and pep-cli creates `identity.json` file.
@@ -275,10 +285,18 @@ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep-cli --help
 
     1. Place the `identity.json` to the location specified by `platform_readers/params/identity_path` of maestro configuration file. In meta-pelion-edge, its placed at [this location](https://github.com/armPelionEdge/meta-pelion-edge/blob/master/recipes-wigwag/maestro/maestro/rpi3/maestro-config-rpi3bplus.yaml#L27) and for snap-pelion-edge at [this](https://github.com/armPelionEdge/edge-utils/blob/master/conf/maestro-conf/edge-config-dell5000-demo.yaml#L16).
 
-    For example, the same steps are listed in this script for meta-pelion-edge project. You can modify this script for your platform.
+    For example, on meta-pelion-edge you can run the following commands -
 
     ```
-    ./install-new-identity.sh
+    mkdir -p /userdata/edge_gw_config
+    mv identity.json /userdata/edge_gw_config/
+    mv pal/ /userdata/mbed/mcc_config
+    ```
+
+    The same steps are listed in this script. You can modify this script for your platform.
+
+    ```
+    ./example-scripts/meta-pelion-edge/install-new-identity.sh
     ```
 
 1. Upload CA - If not already, make sure the CA which was generated in the [Prerequisite section](#prerequisite) has been uploaded to the Device Management.
@@ -286,7 +304,7 @@ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep-cli --help
 1. Upload enrollment identity - To retrieve the enrollment-id of this gateway, send request to pep-api-server.
 
     ```
-    pep-cli get-one-identity -s <serial_number>
+    pep-cli get-enrollment-id -s <serial_number>
     ```
 
     Upload the the enrollment identity to Device Management by following [this documentation](https://www.pelion.com/docs/device-management/current/connecting/device-ownership-first-to-claim-by-enrollment-list.html)
