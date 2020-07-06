@@ -17,7 +17,12 @@
 
 set -e
 
-export PEP_CLI_DIR=$(cd $(dirname $0) && pwd)
+if [ -z "$(readlink $0)" ]; then
+  export PEP_CLI_DIR=$(cd $(dirname $0) && pwd)
+else
+  export PEP_CLI_DIR=$(cd $(dirname $(readlink $0)) && pwd)
+fi
+
 . "$PEP_CLI_DIR/common.sh"
 
 cli_help() {

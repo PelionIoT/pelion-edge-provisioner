@@ -33,35 +33,29 @@ usage() {
     echo "--- fcu.yml"
     echo "--- factory_configurator_utility.zip"
     echo "--- update-auth-certificate.der (optional)"
-    echo "--- ca"
-    echo "--- --- private_key.pem"
-    echo "--- --- ca.crt"
+    echo "--- keystore"
+    echo "--- --- CA_private.pem"
+    echo "--- --- CA_key.pem"
     exit 1
 }
 
 if [ ! -e $FCU_CONFIG_DIR/factory_configurator_utility.zip ]; then
     echo "Couldn't find factory_configurator_utility.zip in $FCU_CONFIG_DIR"
-    echo "Arm licenses FCU to Device Management customers that manufacture connected devices.\
- Please [contact us](https://cloud.mbed.com/contact) for more information.\
- Authorized customers can download the tool and documentation from the [Device Management Portal](https://portal.mbedcloud.com/login)."
     usage
 fi
 
 if [ ! -e $FCU_CONFIG_DIR/fcu.yml ]; then
     echo "Couldn't find fcu.yml in $FCU_CONFIG_DIR"
-    echo "Document on how to configure fcu - factory_configurator_utility.zip/docs/provisioning-fcu/configuring-fcu.html"
     usage
 fi
 
-if [ ! -d $FCU_CONFIG_DIR/ca ]; then
+if [ ! -d $FCU_CONFIG_DIR/keystore ]; then
     echo "Couldn't find certificate authority in $FCU_CONFIG_DIR"
-    echo "Document on how to setup ca - factory_configurator_utility.zip/docs/provisioning-fcu/setting-up-a-certificate-authority.html"
     usage
 fi
 
 if [ ! -e $FCU_CONFIG_DIR/update-auth-certificate.der ]; then
     echo "WARN, No update auth certificate found!"
-    echo "Document on how to generate firmware update certificate using manifest-tool - https://www.pelion.com/docs/device-management/current/updating-firmware/setting-up.html"
 fi
 
 echo "FCU configuration looks good, try installing it."
