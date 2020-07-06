@@ -13,8 +13,6 @@ services:
     image: mongo:$MONGO_VERSION
     restart: unless-stopped
     container_name: pep-server-mongo
-    ports:
-      - 27017:27017
     networks:
       - pep-net
     volumes:
