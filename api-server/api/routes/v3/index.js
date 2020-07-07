@@ -53,21 +53,6 @@ var _create_a_new_identity = function(params) {
 
 };
 
-// Create a gateway identity
-router.post('/identity', (req, res) => {
-
-    req.body.deployed = false;
-    req.body.category = req.body.category || 'production';
-    req.body.cloudAddress = req.body.cloudAddress || req.body.gatewayServicesAddress;
-
-    _create_a_new_identity(req.body).then(() => {
-        res.status(200).send();
-    }, (err) => {
-        res.status(500).send(err);
-    });
-
-});
-
 // Create batch of gateway identities
 router.post('/batch/identity', (req, res) => {
     res.status(501).send();
@@ -137,28 +122,36 @@ router.get('/identity', (req, res) => {
     delete req.query.port;
 
     req.query.deployed = false;
+    req.query.category = req.query.category || 'production';
+    req.query.cloudAddress = req.query.cloudAddress || req.query.gatewayServicesAddress;
 
-    IdentityCollection.findOne(req.query, {_id: 0}).then((data) => {
+    _create_a_new_identity(req.query).then((identityData) => {
 
-        if(!data) {
-            return res.status(404).send();
-        }
+        IdentityCollection.findOne(req.query, {_id: 0}).then((data) => {
 
-        execute_fcu(data).then((updated_identity) => {
+            if(!data) {
+                return res.status(404).send();
+            }
 
-            IdentityCollection.findOneAndUpdate(req.query, updated_identity, {new: true}).then((data) => {
-                res.status(200).send(data);
+            execute_fcu(data).then((updated_identity) => {
+
+                IdentityCollection.findOneAndUpdate(req.query, updated_identity, {new: true}).then((data) => {
+                    res.status(200).send(data);
+                }, (err) => {
+                    logger.error("Failed to findOneAndUpdate ", err);
+                    res.status(500).send(err);
+                });
+
             }, (err) => {
-                logger.error("Failed to findOneAndUpdate ", err);
                 res.status(500).send(err);
             });
 
         }, (err) => {
+            logger.error("Failed to findOne ", err);
             res.status(500).send(err);
         });
 
     }, (err) => {
-        logger.error("Failed to findOne ", err);
         res.status(500).send(err);
     });
 

@@ -28,6 +28,7 @@ GW_URL="https://gateways.us-east-1.mbedcloud.com"
 RADIO_CONFIG="00"
 LED_CONFIG="01"
 CATEGORY="production"
+HW_VERSION="arm-pelion-edge-gateway"
 
 cli_help_get_one_identity() {
   echo "
@@ -36,11 +37,11 @@ Usage: pep get-one-identity [<options>]
 Options:
   -a <ip_or_dns>            pelion cloud api url (default: '$API_URL')
   -g <ip_or_dns>            pelion cloud gateway service address (default: '$GW_URL')
-  -s <string_value>         serial number of the gateway
-  -w <string_value>         hardware version of the gateway, refer configurations section in
-                            $PEP_CLI_DIR/../lib/radioProfile.template.json
-  -r <string_value>         radio configuration of the gateway, refer configurations section in
-                            $PEP_CLI_DIR/../lib/radioProfile.template.json (default: '$RADIO_CONFIG')
+  -s <string_value>         serial number of the gateway. There is no schema enforced on this parameter,
+                            hence it can be of any length with any alphanumeric and special characters.
+                            But it has to be unique, server will not provision 2 gateways with the same serial number.
+  -w <string_value>         hardware version of the gateway (default: '$HW_VERSION')
+  -r <string_value>         radio configuration of the gateway (default: '$RADIO_CONFIG')
   -l <string_value>         status led configuration of the gateway (default: '$LED_CONFIG')
   -c <string_value>         developer or production (default: '$CATEGORY')
   -i <ip>                   ip address of the gateway where factory-configurator-client is running
@@ -99,6 +100,11 @@ while getopts 'a:g:s:w:r:l:c:i:p:hv' opt "${@:2}"; do
 done
 
 shift "$(($OPTIND-1))"
+
+if [ -z "$SERIAL_NUMBER" ]; then
+    cli_error "-s <serial_number> not specified!"
+    exit 1
+fi
 
 if [ -z "$FCC_IP_ADDRESS" ]; then
     cli_error "-i <ip> not specified!"

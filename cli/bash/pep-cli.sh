@@ -37,7 +37,6 @@ Options:
   -h, --help                       output usage information
 
 Commands:
-  create-one-identity [<options>]  create a gateway identity
   get-one-identity [<options>]     get a gateway identity based on the provided filters
   get-enrollment-id [<options>]    get enrollment identity of dispatched gateway
   help                             display help"
@@ -48,9 +47,6 @@ export API_VERSION="v3"
 export PEP_SERVER_URL=${PEP_SERVER_URL:-"http://localhost:5151"}
 
 case "$1" in
-  create-one-identity)
-    "$PEP_CLI_DIR/commands/create-one-identity.sh" $@
-    ;;
   get-one-identity)
     "$PEP_CLI_DIR/commands/get-one-identity.sh" $@
     ;;
