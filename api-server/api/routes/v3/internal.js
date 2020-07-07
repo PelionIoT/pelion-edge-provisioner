@@ -50,15 +50,4 @@ router.get('/requestLog', (req, res) => {
     res.status(200).send(requestLog);
 });
 
-//Allow developers to increase log levels (0 to 4) for debugging
-router.post('/logLevel', (req, res) => {
-    logger.info('Got new log level ' + JSON.stringify(req.body));
-    if(typeof req.body.level === 'number') {
-        global.rdLogLevel = req.body.level;
-        res.status(200).send('Successful');
-    } else {
-        res.status(400).send('loglevel should be a key with value between 0 to 4');
-    }
-});
-
 module.exports = router;
