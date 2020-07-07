@@ -17,15 +17,34 @@
 
 set -e
 
+EDGE_GW_CONFIG_DIR="/userdata/edge_gw_config/"
+PDM_CRED_DIR="/userdata/mbed/mcc_config"
+
 # Halt edge-core's execution
 systemctl stop edge-core
+echo "Stopped edge-core"
 
 # Remove old device management credentials
-rm -rf /userdata/mbed/mcc_config
+rm -rf $PDM_CRED_DIR
+echo "Cleared device management credentials"
 
-# Remove old identit.json
-rm -rf /userdata/edge_gw_config
+# Remove old identity.json
+rm -rf $EDGE_GW_CONFIG_DIR
+echo "Cleared identity.json"
 
+# -------------------------------------------------------------------
 # meta-pelion-edge platform specifics
+# -------------------------------------------------------------------
 # Remove the gateway statistics generated from old provisioning data. This is used by info command
 rm -rf /wigwag/system/lib/bash/relaystatics.sh
+echo "Cleared relaystatics.sh"
+
+# Remove device database
+rm -rf /userdata/etc/devicejs/db
+echo "Cleared devicedb"
+
+# Remove maestro database
+rm -rf /userdata/etc/maestroConfig.db
+echo "Cleared maestro database"
+
+echo "Done"

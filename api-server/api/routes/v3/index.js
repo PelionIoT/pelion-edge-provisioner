@@ -125,7 +125,7 @@ router.get('/identity', (req, res) => {
     req.query.category = req.query.category || 'production';
     req.query.cloudAddress = req.query.cloudAddress || req.query.gatewayServicesAddress;
 
-    _create_a_new_identity(req.body).then(() => {
+    _create_a_new_identity(req.query).then((identityData) => {
 
         IdentityCollection.findOne(req.query, {_id: 0}).then((data) => {
 

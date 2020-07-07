@@ -17,9 +17,18 @@
 
 set -e
 
+EDGE_GW_CONFIG_DIR="/userdata/edge_gw_config/"
+IDENTITY_JSON_FILE="identity.json"
+PDM_CRED_DIR="/userdata/mbed/mcc_config"
+FCC_OUTPUT="pal/"
+
 # Move the identity.json to location as per maestro config
-mkdir -p /userdata/edge_gw_config
-mv identity.json /userdata/edge_gw_config/
+mkdir -p $EDGE_GW_CONFIG_DIR
+mv $IDENTITY_JSON_FILE $EDGE_GW_CONFIG_DIR
+echo "Successfully installed identity.json at $EDGE_GW_CONFIG_DIR$IDENTITY_JSON_FILE"
 
 # Move the device management credentials to location as per edge-core config
-mv pal/ /userdata/mbed/mcc_config
+mv $FCC_OUTPUT $PDM_CRED_DIR
+echo "Successfully installed device management credentials at $PDM_CRED_DIR"
+
+echo "Done"
