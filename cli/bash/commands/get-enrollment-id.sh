@@ -63,4 +63,6 @@ if [ -z "$SERIAL_NUMBER" ]; then
     exit 1
 fi
 
-curl $PEP_SERVER_URL/$API_VERSION/enrollment-id?serialNumber=$SERIAL_NUMBER $VERBOSE
+curl -G \
+    --data-urlencode "serialNumber=$SERIAL_NUMBER" \
+    $PEP_SERVER_URL/$API_VERSION/enrollment-id $VERBOSE

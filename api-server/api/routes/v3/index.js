@@ -124,7 +124,10 @@ router.get('/identity', (req, res) => {
 
     req.query.deployed = false;
     req.query.category = req.query.category || 'production';
-    req.query.cloudAddress = req.query.cloudAddress || req.query.gatewayServicesAddress;
+    req.query.serialNumber = decodeURI(req.query.serialNumber);
+    req.query.gatewayServicesAddress = decodeURI(req.query.gatewayServicesAddress);
+    req.query.apiAddress = decodeURI(req.query.apiAddress);
+    req.query.cloudAddress = req.query.gatewayServicesAddress;
 
     _create_a_new_identity(req.query).then((identityData) => {
 
@@ -174,6 +177,7 @@ router.get('/enrollment-id', function(req, res) {
     }
 
     req.query.deployed = true;
+    req.query.serialNumber = decodeURI(req.query.serialNumber);
 
     IdentityCollection.findOne(req.query).then((data) => {
         if(data) {
