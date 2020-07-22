@@ -5,105 +5,70 @@ info:
   description: APIs to help provision the Pelion Edge gateway in production mode.
 paths:
   /v3/identity:
-    post:
-      description: Create a new gateway identity
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                apiAddress:
-                  type: string
-                  example: https://api.us-east-1.mbedcloud.com
-                  description: Pelion cloud API address to be used by gateway software
-                gatewayServicesAddress:
-                  type: string
-                  example: https://gateways.us-east-1.mbedcloud.com
-                  description: Pelion cloud gateway service address to be used by gateway
-                    software
-                serialNumber:
-                  type: string
-                  description: Specify the serial number of the gateway
-                hardwareVersion:
-                  type: string
-                  example: rpi3bplus
-                  description: The type of the hardware. To find the supported
-                    hardwareVersion, refer configuration section of
-                    ./cli/lib/radioProfile.template.json
-                radioConfig:
-                  type: string
-                  example: "00"
-                  description: The type of supported radios. To find the supported
-                    radioConfig, refer configuration section of
-                    ./cli/lib/radioProfile.template.json
-                ledConfig:
-                  type: string
-                  example: "01"
-                  description: Gateway status led configuration
-        description: New gateway identity parameters
-        required: true
-      responses:
-        "200":
-          description: Success
-        "500":
-          description: An unexpected error occurred
     get:
       description: Get a gateway identity
       parameters:
         - name: ip
           in: query
           required: true
-          type: string
           description: 'IP address of the gateway'
           allowReserved: true
+          schema:
+            type: string
         - name: 'port'
           in: query
           required: true
-          type: number
           description: 'Port number at which factory_configurator_client is running on the gateway'
           allowReserved: true
+          schema:
+            type: number
         - name: 'apiAddress'
           in: query
           required: false
-          type: string
-          default: 'https://api.us-east-1.mbedcloud.com'
           description: 'Pelion cloud API address to be used by gateway software'
           allowReserved: false
+          schema:
+            type: string
+            default: 'https://api.us-east-1.mbedcloud.com'
         - name: 'gatewayServicesAddress'
           in: query
           required: false
-          type: string
-          default: 'https://gateways.us-east-1.mbedcloud.com'
           description: 'Pelion cloud gateway service address to be used by gateway software'
           allowReserved: false
+          schema:
+            type: string
+            default: 'https://gateways.us-east-1.mbedcloud.com'
         - name: 'serialNumber'
           in: query
           required: false
-          type: string
           description: 'Retreive an identity with this specific serial number'
           allowReserved: false
+          schema:
+            type: string
         - name: 'hardwareVersion'
           in: query
           required: false
-          type: string
-          default: 'arm-pelion-edge-gateway'
           description: 'Retreive an identity for this hardware type.'
           allowReserved: true
+          schema:
+            type: string
+            default: 'arm-pelion-edge-gateway'
         - name: 'radioConfig'
           in: query
           required: false
-          type: string
-          default: '00'
           description: 'Retreive an identity for this radio configuration.'
           allowReserved: true
+          schema:
+            type: string
+            default: '00'
         - name: 'ledConfig'
           in: query
           required: false
-          type: string
-          default: '01'
           description: 'Gateway status led configuration'
           allowReserved: true
+          schema:
+            type: string
+            default: '01'
       responses:
         "200":
           description: Success
@@ -115,7 +80,7 @@ paths:
           description: Not found
         "500":
           description: An unexpected error occurred
-  /enrollment-id:
+  /v3/enrollment-id:
     get:
       description: Get enrollment identity of a gateway
       parameters:
@@ -137,7 +102,7 @@ paths:
           description: Bad request
         "500":
           description: An unexpected error occurred
-  /enrollment-ids:
+  /v3/enrollment-ids:
     get:
       description: Get list of enrollment identites of the dispatched gateways
       parameters:

@@ -47,7 +47,7 @@ var create_identity = (identity) => {
             var root_cert = fs.readFileSync(self_signed_certs_file_path + '/root_cert.pem', 'utf8');
             var intermediate_cert = fs.readFileSync(self_signed_certs_file_path + '/intermediate_cert.pem', 'utf8');
 
-            identity = Object.assign(identity, {
+            identity = Object.assign(JSON.parse(JSON.stringify(identity)), {
                 ssl: {
                     client: {
                         key: device_key,

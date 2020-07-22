@@ -38,7 +38,6 @@ RUN apt-get update && apt-get install -y \
 
 # Installing package dependencies of the tool
 RUN npm install
-RUN npm link
 
 # To setup virtual environment
 RUN apt-get update && apt-get install -y \

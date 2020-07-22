@@ -39,10 +39,6 @@ var IdentitySchema = new Schema({
         type: [Number],
         default: undefined
     },
-    ssl: {
-        type: Object,
-        required: true
-    },
     hardwareVersion: {
         type: String,
         required: true
@@ -77,9 +73,6 @@ var IdentitySchema = new Schema({
     sixBMAC: {
         type: [Number],
         default: undefined
-    },
-    mbed: {
-        type: Object
     },
     enrollmentID: {
         type: String
