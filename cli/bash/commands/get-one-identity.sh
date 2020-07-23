@@ -56,7 +56,7 @@ OPTIND=1
 
 QUERY=""
 
-while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
+while getopts 'a:g:s:w:r:l:c:i:p:hv' opt []; do
     case "$opt" in
         h|-help)
             cli_help_get_one_identity
@@ -98,9 +98,8 @@ while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
             ;;
     esac
 done
+
 shift "$(($OPTIND++))"
-[ $OPTIND -gt $# ] && break
-# shift "$(($OPTIND++))"
 
 if [ -z "$SERIAL_NUMBER" ]; then
     cli_error "-s <serial_number> not specified!"
