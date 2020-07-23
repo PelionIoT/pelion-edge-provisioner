@@ -98,8 +98,9 @@ while getopts 'a:g:s:w:r:l:c:i:p:hv' opt > /dev/null 2>&1; do
             ;;
     esac
 done
-
-shift "$(($OPTIND++))"
+((OPTIND++)) 
+[ $OPTIND -gt $# ] && break
+# shift "$(($OPTIND++))"
 
 if [ -z "$SERIAL_NUMBER" ]; then
     cli_error "-s <serial_number> not specified!"
