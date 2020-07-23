@@ -52,11 +52,11 @@ Options:
 
 [ ! -n "$2" ] && cli_help_get_one_identity && exit 1
 
-OPTIND=1
+# OPTIND=1
 
 QUERY=""
 
-while getopts 'a:g:s:w:r:l:c:i:p:hv' opt "${@:2}"; do
+while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
     case "$opt" in
         h|-help)
             cli_help_get_one_identity
@@ -99,7 +99,7 @@ while getopts 'a:g:s:w:r:l:c:i:p:hv' opt "${@:2}"; do
     esac
 done
 
-shift "$(($OPTIND-1))"
+shift "$((OPTIND-1))"
 
 if [ -z "$SERIAL_NUMBER" ]; then
     cli_error "-s <serial_number> not specified!"
