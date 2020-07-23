@@ -52,7 +52,7 @@ Options:
 
 [ ! -n "$2" ] && cli_help_get_one_identity && exit 1
 
-# OPTIND=1
+OPTIND=1
 
 QUERY=""
 
@@ -98,7 +98,7 @@ while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
             ;;
     esac
 done
-((OPTIND++)) 
+shift ((OPTIND++)) 
 [ $OPTIND -gt $# ] && break
 # shift "$(($OPTIND++))"
 
