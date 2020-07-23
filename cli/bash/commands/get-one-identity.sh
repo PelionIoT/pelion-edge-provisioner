@@ -98,7 +98,7 @@ while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
             ;;
     esac
 done
-shift ((OPTIND++)) 
+shift "$(($OPTIND++))"
 [ $OPTIND -gt $# ] && break
 # shift "$(($OPTIND++))"
 
