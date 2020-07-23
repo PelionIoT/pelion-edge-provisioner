@@ -56,7 +56,7 @@ OPTIND=1
 
 QUERY=""
 
-while getopts 'a:g:s:w:r:l:c:i:p:hv' opt []; do
+while getopts 'a:g:s:w:r:l:c:i:p:hv' opt {@:2}; do
     case "$opt" in
         h|-help)
             cli_help_get_one_identity
