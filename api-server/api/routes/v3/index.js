@@ -20,6 +20,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const exec = require('child_process').exec;
+const hal = require('hal');
 
 const create_identity = require('./create_identity');
 
@@ -163,6 +164,8 @@ router.get('/enrollment-id', function(req, res) {
         return res.status(400).send();
     }
 
+    req.query.deployed = true;
+
     IdentityCollection.findOne(req.query).then((data) => {
         res.status(200).send(data.enrollmentID);
     }, (err) => {
@@ -171,6 +174,85 @@ router.get('/enrollment-id', function(req, res) {
 
 });
 
+const DESCENDING = -1;
+const ASCENDING = 1;
+const DEFAULT_LIMIT = 50;
+const MAX_LIMIT = 1000;
+const DEFAULT_ORDER = DESCENDING;
 
+function UpdateQueryString(key, value, url) {
+    var re = new RegExp("([?&])" + key + "=.*?(&|#|$)(.*)", "gi"),
+        hash;
+
+    if (re.test(url)) {
+        if (typeof value !== 'undefined' && value !== null)
+            return url.replace(re, '$1' + key + "=" + value + '$2$3');
+        else {
+            hash = url.split('#');
+            url = hash[0].replace(re, '$1$3').replace(/(&|\?)$/, '');
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null)
+                url += '#' + hash[1];
+            return url;
+        }
+    }
+    else {
+        if (typeof value !== 'undefined' && value !== null) {
+            var separator = url.indexOf('?') !== -1 ? '&' : '?';
+            hash = url.split('#');
+            url = hash[0] + separator + key + '=' + value;
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null)
+                url += '#' + hash[1];
+            return url;
+        }
+        else
+            return url;
+    }
+}
+
+// Retrieve a list of serial number and their enrollment ids
+router.get('/enrollment-ids', function(req, res) {
+    var limit = DEFAULT_LIMIT;
+    var order = DEFAULT_ORDER;
+    var query = {
+        deployed: true
+    };
+
+    if(req.query.limit) {
+        limit = parseInt(req.query.limit) || DEFAULT_LIMIT;
+        if(limit > MAX_LIMIT) {
+            limit = MAX_LIMIT;
+        }
+    }
+
+    if(typeof req.query.order == 'string' && ["asc", "desc"].indexOf(req.query.order.toLowerCase()) > -1) {
+        order = (req.query.order.toLowerCase() == 'desc') ? DESCENDING : ASCENDING;
+    }
+
+    if(req.query.last && req.query.last.length > 0) {
+        if(order == DESCENDING) {
+            query._id = {
+                $lt: mongoose.Types.ObjectId(req.query.last)
+            }
+        } else {
+            query._id = {
+                $gt: mongoose.Types.ObjectId(req.query.last)
+            }
+        }
+    }
+
+    IdentityCollection.find(query).limit(limit).sort({ "$natural": order }).then((data) => {
+        var resrc = new hal.Resource({results: data}, req._parsedUrl.href);
+        resrc.total_count = data.length;
+        resrc.limit = limit;
+        resrc.order = req.query.order || 'DESC';
+        if(data.length > 0) {
+            resrc.link("next", UpdateQueryString("last", data[data.length - 1]._id, req._parsedUrl.href));
+        }
+        res.status(200).send(resrc);
+    }, (err) => {
+        res.status(500).send(err);
+    });
+
+});
 
 module.exports = router;
