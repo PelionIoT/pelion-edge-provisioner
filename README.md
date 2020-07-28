@@ -232,7 +232,7 @@ PEP_SERVER_URL=http://<api-server-ip-address>:5151 pep-cli --help
 
     Binary is located at -
     ```
-    ./out/Release/factory-configurator-client-example.elf
+    ./Release/factory-configurator-client-example.elf
     ```
 
 1. Prepare - stop edge-core and clear out the old provisioning files. For example, if you are running [meta-pelion-edge](https://github.com/armPelionEdge/meta-pelion-edge) on RPi 3B+, you have run the following commands -
