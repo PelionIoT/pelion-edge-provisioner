@@ -143,7 +143,12 @@ router.get('/identity', (req, res) => {
                 });
 
             }, (err) => {
-                res.status(500).send(err);
+                // Delete the created identity as the FCU failed
+                IdentityCollection.remove(req.query).then(() => {
+                    res.status(500).send(err);
+                }, function(err) {
+                    res.status(500).send(err);
+                })
             });
 
         }, (err) => {
@@ -152,7 +157,11 @@ router.get('/identity', (req, res) => {
         });
 
     }, (err) => {
-        res.status(500).send(err);
+        if(err && err.code == 11000) {
+            res.status(409).send('Duplicate serial number');
+        } else {
+            res.status(500).send(err);
+        }
     });
 
 });
@@ -163,8 +172,14 @@ router.get('/enrollment-id', function(req, res) {
         return res.status(400).send();
     }
 
+    req.query.deployed = true;
+
     IdentityCollection.findOne(req.query).then((data) => {
-        res.status(200).send(data.enrollmentID);
+        if(data) {
+            res.status(200).send(data.enrollmentID);
+        } else {
+            res.status(404).send('Not found!');
+        }
     }, (err) => {
         res.status(500).send(err);
     });
