@@ -2,15 +2,15 @@
 
 ## Pelion Edge provisioner v2.1.0
 
-### Added
+### Additions
 - The gateway initiates certificate injection, instead of [Factory Configurator Utility (FCU)](https://www.pelion.com/docs/device-management/current/provisioning-process/index.html), which initiates the injection in the [default Device Management provisioning flow](https://www.pelion.com/docs/device-management/current/provisioning-process/index.html).
-- The pep tool records enrollment the identity and configuration information of all provisioned gateways.
+- The Pelion Edge provisioning (pep) tool records the enrollment identity and configuration information of all provisioned gateways.
 - Integrates default Pelion Device Management provisioning tools - Factory Configurator Utility (FCU) and Factory Configurator Client (FCC).
 - Gateway provisioning in production mode.
 - Pep API server hosts REST calls:
-	- `GET /identity` to create and dispatch new gateway identites.
+	- `GET /identity` to create and dispatch new gateway identities.
 	- `GET /enrollment-id` to get the enrollment identity of the dispatched gateway.
-- Provides pep CLI, a command-line tool that interacts with the pep API server using cURL.
+- Provides pep command-line interface (CLI), a command-line tool that interacts with the pep API server using cURL.
 
 ### Out of scope
 - Gateway provisioning in developer mode.
