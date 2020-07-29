@@ -35,9 +35,9 @@ Options:
 
 [ ! -n "$2" ] && cli_help_get_enrollment_id && exit 1
 
-OPTIND=1
+OPTIND=2
 
-while getopts 's:hv' opt "${@:2}"; do
+while getopts 's:hv' opt; do
     case "$opt" in
         h|-help)
             cli_help_get_enrollment_id
