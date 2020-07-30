@@ -32,32 +32,40 @@ router.use(require('./internal.js'));
 
 const IdentityCollection = mongoose.model('edge_identity');
 
-
 var _create_a_new_identity = function(params) {
 
     return new Promise((resolve, reject) => {
 
-        create_identity(params).then((identity) => {
+        IdentityCollection.findOne({serialNumber: params.serialNumber}).then((savedIdentity) => {
 
-            let doc = new IdentityCollection(identity);
+            if(savedIdentity) {
+                return reject({
+                    code: 409,
+                    message: 'Identity with this serial number exists already!'
+                })
+            }
 
-            doc.save((err, data) => {
-                if(err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
+            create_identity(params).then((identity) => {
+
+                let doc = new IdentityCollection(identity);
+
+                doc.save((err, data) => {
+                    if(err) {
+                        reject({
+                            code: 500,
+                            message: err
+                        });
+                    } else {
+                        // We cannot use `data` as identity has ssl information which is not saved in mongo
+                        resolve(identity);
+                    }
+                });
             });
         });
 
     });
 
 };
-
-// Create batch of gateway identities
-router.post('/batch/identity', (req, res) => {
-    res.status(501).send();
-});
 
 // Get a gateway identity
 router.get('/identity', (req, res) => {
@@ -139,8 +147,11 @@ router.get('/identity', (req, res) => {
 
             execute_fcu(data).then((updated_identity) => {
 
-                IdentityCollection.findOneAndUpdate(req.query, updated_identity, {new: true}).then((data) => {
-                    res.status(200).send(data);
+                IdentityCollection.findOneAndUpdate(req.query, updated_identity).then((data) => {
+
+                    var output = Object.assign(identityData, updated_identity.toObject());
+                    res.status(200).send(output);
+
                 }, (err) => {
                     logger.error("Failed to findOneAndUpdate ", err);
                     res.status(500).send(err);
@@ -163,6 +174,8 @@ router.get('/identity', (req, res) => {
     }, (err) => {
         if(err && err.code == 11000) {
             res.status(409).send('Duplicate serial number');
+        } else if(err && err.code) {
+            res.status(err.code).send(err.message);
         } else {
             res.status(500).send(err);
         }

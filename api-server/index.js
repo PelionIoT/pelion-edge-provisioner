@@ -37,12 +37,16 @@ global.rdLogLevel = config.logLevel || 2;
 require('./api/models/v3/identity');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(config.mongo_db_uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
-mongoose.set('useCreateIndex', true);
-mongoose.set('useFindAndModify', false);
+var mongoInitialConnection = false;
+function connect() {
+    mongoose.connect(config.mongo_db_uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
+    mongoose.set('useCreateIndex', true);
+    mongoose.set('useFindAndModify', false);
+}
+connect();
 
 var db = mongoose.connection;
 db.on('error', function(err) {
@@ -50,6 +54,17 @@ db.on('error', function(err) {
 });
 db.once('open', function() {
     logger.info('Connected to ' + config.mongo_db_uri + ' successfully!');
+    mongoInitialConnection = true;
+});
+db.on('reconnected', function() {
+    logger.info('MongoDB reconnected!');
+});
+db.on('reconnectFailed', function() {
+    logger.error('Fatal: MongoDB reconnectFailed!');
+});
+db.on('disconnected', function() {
+    logger.error('MongoDB disconnected');
+    if(!mongoInitialConnection) setTimeout(connect, 10000);
 });
 
 // parse requests of content-type - application/x-www-form-urlencoded
