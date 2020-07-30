@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Arm Limited and affiliates.
+ * Copyright (c) 2020, Arm Limited and affiliates.
  * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,7 +47,7 @@ var create_identity = (identity) => {
             var root_cert = fs.readFileSync(self_signed_certs_file_path + '/root_cert.pem', 'utf8');
             var intermediate_cert = fs.readFileSync(self_signed_certs_file_path + '/intermediate_cert.pem', 'utf8');
 
-            identity = Object.assign(identity, {
+            identity = Object.assign(JSON.parse(JSON.stringify(identity)), {
                 ssl: {
                     client: {
                         key: device_key,

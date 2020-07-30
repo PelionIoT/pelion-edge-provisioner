@@ -1,4 +1,4 @@
-# Copyright (c) 2019, Arm Limited and affiliates.
+# Copyright (c) 2020, Arm Limited and affiliates.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +39,7 @@ Options:
 Commands:
   get-one-identity [<options>]     get a gateway identity based on the provided filters
   get-enrollment-id [<options>]    get enrollment identity of dispatched gateway
+  list-enrollment-ids [<options>]  get a list of enrollment identities of dispatched gateways
   help                             display help"
   exit 1
 }
@@ -52,6 +53,9 @@ case "$1" in
     ;;
   get-enrollment-id)
     "$PEP_CLI_DIR/commands/get-enrollment-id.sh" $@
+    ;;
+  list-enrollment-ids)
+    "$PEP_CLI_DIR/commands/list-enrollment-ids.sh" $@
     ;;
   -V|--version)
     echo "Version: $(cat $PEP_CLI_DIR/VERSION)"

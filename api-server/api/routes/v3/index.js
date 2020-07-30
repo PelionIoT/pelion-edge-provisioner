@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Arm Limited and affiliates.
+ * Copyright (c) 2020, Arm Limited and affiliates.
  * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const exec = require('child_process').exec;
+const hal = require('hal');
 
 const create_identity = require('./create_identity');
 
@@ -31,32 +32,40 @@ router.use(require('./internal.js'));
 
 const IdentityCollection = mongoose.model('edge_identity');
 
-
 var _create_a_new_identity = function(params) {
 
     return new Promise((resolve, reject) => {
 
-        create_identity(params).then((identity) => {
+        IdentityCollection.findOne({serialNumber: params.serialNumber}).then((savedIdentity) => {
 
-            let doc = new IdentityCollection(identity);
+            if(savedIdentity) {
+                return reject({
+                    code: 409,
+                    message: 'Identity with this serial number exists already!'
+                })
+            }
 
-            doc.save((err, data) => {
-                if(err) {
-                    reject(err);
-                } else {
-                    resolve(data);
-                }
+            create_identity(params).then((identity) => {
+
+                let doc = new IdentityCollection(identity);
+
+                doc.save((err, data) => {
+                    if(err) {
+                        reject({
+                            code: 500,
+                            message: err
+                        });
+                    } else {
+                        // We cannot use `data` as identity has ssl information which is not saved in mongo
+                        resolve(identity);
+                    }
+                });
             });
         });
 
     });
 
 };
-
-// Create batch of gateway identities
-router.post('/batch/identity', (req, res) => {
-    res.status(501).send();
-});
 
 // Get a gateway identity
 router.get('/identity', (req, res) => {
@@ -123,7 +132,10 @@ router.get('/identity', (req, res) => {
 
     req.query.deployed = false;
     req.query.category = req.query.category || 'production';
-    req.query.cloudAddress = req.query.cloudAddress || req.query.gatewayServicesAddress;
+    req.query.serialNumber = decodeURI(req.query.serialNumber);
+    req.query.gatewayServicesAddress = decodeURI(req.query.gatewayServicesAddress);
+    req.query.apiAddress = decodeURI(req.query.apiAddress);
+    req.query.cloudAddress = req.query.gatewayServicesAddress;
 
     _create_a_new_identity(req.query).then((identityData) => {
 
@@ -135,15 +147,23 @@ router.get('/identity', (req, res) => {
 
             execute_fcu(data).then((updated_identity) => {
 
-                IdentityCollection.findOneAndUpdate(req.query, updated_identity, {new: true}).then((data) => {
-                    res.status(200).send(data);
+                IdentityCollection.findOneAndUpdate(req.query, updated_identity).then((data) => {
+
+                    var output = Object.assign(identityData, updated_identity.toObject());
+                    res.status(200).send(output);
+
                 }, (err) => {
                     logger.error("Failed to findOneAndUpdate ", err);
                     res.status(500).send(err);
                 });
 
             }, (err) => {
-                res.status(500).send(err);
+                // Delete the created identity as the FCU failed
+                IdentityCollection.remove(req.query).then(() => {
+                    res.status(500).send(err);
+                }, function(err) {
+                    res.status(500).send(err);
+                })
             });
 
         }, (err) => {
@@ -152,7 +172,13 @@ router.get('/identity', (req, res) => {
         });
 
     }, (err) => {
-        res.status(500).send(err);
+        if(err && err.code == 11000) {
+            res.status(409).send('Duplicate serial number');
+        } else if(err && err.code) {
+            res.status(err.code).send(err.message);
+        } else {
+            res.status(500).send(err);
+        }
     });
 
 });
@@ -163,14 +189,100 @@ router.get('/enrollment-id', function(req, res) {
         return res.status(400).send();
     }
 
+    req.query.deployed = true;
+    req.query.serialNumber = decodeURI(req.query.serialNumber);
+
     IdentityCollection.findOne(req.query).then((data) => {
-        res.status(200).send(data.enrollmentID);
+        if(data) {
+            res.status(200).send(data.enrollmentID);
+        } else {
+            res.status(404).send('Not found!');
+        }
     }, (err) => {
         res.status(500).send(err);
     });
 
 });
 
+const DESCENDING = -1;
+const ASCENDING = 1;
+const DEFAULT_LIMIT = 50;
+const MAX_LIMIT = 1000;
+const DEFAULT_ORDER = DESCENDING;
 
+function UpdateQueryString(key, value, url) {
+    var re = new RegExp("([?&])" + key + "=.*?(&|#|$)(.*)", "gi"),
+        hash;
+
+    if (re.test(url)) {
+        if (typeof value !== 'undefined' && value !== null)
+            return url.replace(re, '$1' + key + "=" + value + '$2$3');
+        else {
+            hash = url.split('#');
+            url = hash[0].replace(re, '$1$3').replace(/(&|\?)$/, '');
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null)
+                url += '#' + hash[1];
+            return url;
+        }
+    }
+    else {
+        if (typeof value !== 'undefined' && value !== null) {
+            var separator = url.indexOf('?') !== -1 ? '&' : '?';
+            hash = url.split('#');
+            url = hash[0] + separator + key + '=' + value;
+            if (typeof hash[1] !== 'undefined' && hash[1] !== null)
+                url += '#' + hash[1];
+            return url;
+        }
+        else
+            return url;
+    }
+}
+
+// Retrieve a list of serial number and their enrollment ids
+router.get('/enrollment-ids', function(req, res) {
+    var limit = DEFAULT_LIMIT;
+    var order = DEFAULT_ORDER;
+    var query = {
+        deployed: true
+    };
+
+    if(req.query.limit) {
+        limit = parseInt(req.query.limit) || DEFAULT_LIMIT;
+        if(limit > MAX_LIMIT) {
+            limit = MAX_LIMIT;
+        }
+    }
+
+    if(typeof req.query.order == 'string' && ["asc", "desc"].indexOf(req.query.order.toLowerCase()) > -1) {
+        order = (req.query.order.toLowerCase() == 'desc') ? DESCENDING : ASCENDING;
+    }
+
+    if(req.query.last && req.query.last.length > 0) {
+        if(order == DESCENDING) {
+            query._id = {
+                $lt: mongoose.Types.ObjectId(req.query.last)
+            }
+        } else {
+            query._id = {
+                $gt: mongoose.Types.ObjectId(req.query.last)
+            }
+        }
+    }
+
+    IdentityCollection.find(query).limit(limit).sort({ "$natural": order }).then((data) => {
+        var resrc = new hal.Resource({results: data}, req._parsedUrl.href);
+        resrc.total_count = data.length;
+        resrc.limit = limit;
+        resrc.order = req.query.order || 'DESC';
+        if(data.length > 0) {
+            resrc.link("next", UpdateQueryString("last", data[data.length - 1]._id, req._parsedUrl.href));
+        }
+        res.status(200).send(resrc);
+    }, (err) => {
+        res.status(500).send(err);
+    });
+
+});
 
 module.exports = router;

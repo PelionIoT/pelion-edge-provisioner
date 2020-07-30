@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2019, Arm Limited and affiliates.
+# Copyright (c) 2020, Arm Limited and affiliates.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ usage() {
     echo "--- update-auth-certificate.der (optional)"
     echo "--- keystore"
     echo "--- --- CA_private.pem"
-    echo "--- --- CA_key.pem"
+    echo "--- --- CA_cert.pem"
     exit 1
 }
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (c) 2019, Arm Limited and affiliates.
+# Copyright (c) 2020, Arm Limited and affiliates.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

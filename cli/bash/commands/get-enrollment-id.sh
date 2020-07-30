@@ -1,4 +1,4 @@
-# Copyright (c) 2019, Arm Limited and affiliates.
+# Copyright (c) 2020, Arm Limited and affiliates.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,4 +63,7 @@ if [ -z "$SERIAL_NUMBER" ]; then
     exit 1
 fi
 
-curl $PEP_SERVER_URL/$API_VERSION/enrollment-id?serialNumber=$SERIAL_NUMBER $VERBOSE
+
+curl -G \
+    --data-urlencode "serialNumber=$SERIAL_NUMBER" \
+    $PEP_SERVER_URL/$API_VERSION/enrollment-id $VERBOSE
