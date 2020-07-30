@@ -1,177 +1,285 @@
----
-swagger: '2.0'
+openapi: 3.0.0
 info:
   version: "3"
   title: pep (pelion-edge-provisioner)
-  description: "APIs to help provision the Pelion Edge gateway in production mode."
-schemes:
-- http
-consumes:
-- application/json
-produces:
-- application/json
-basePath: "/"
-
+  description: APIs to help provision the Pelion Edge gateway in production mode.
 paths:
-  "/v3/identity":
+  /v3/identity:
     post:
-      description: 'Create a new gateway identity'
+      description: Create a new gateway identity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                apiAddress:
+                  type: string
+                  example: https://api.us-east-1.mbedcloud.com
+                  description: Pelion cloud API address to be used by gateway software
+                gatewayServicesAddress:
+                  type: string
+                  example: https://gateways.us-east-1.mbedcloud.com
+                  description: Pelion cloud gateway service address to be used by gateway
+                    software
+                serialNumber:
+                  type: string
+                  description: Specify the serial number of the gateway
+                hardwareVersion:
+                  type: string
+                  example: rpi3bplus
+                  description: The type of the hardware. To find the supported
+                    hardwareVersion, refer configuration section of
+                    ./cli/lib/radioProfile.template.json
+                radioConfig:
+                  type: string
+                  example: "00"
+                  description: The type of supported radios. To find the supported
+                    radioConfig, refer configuration section of
+                    ./cli/lib/radioProfile.template.json
+                ledConfig:
+                  type: string
+                  example: "01"
+                  description: Gateway status led configuration
+        description: New gateway identity parameters
+        required: true
+      responses:
+        "200":
+          description: Success
+        "500":
+          description: An unexpected error occurred
+    get:
+      description: Get a gateway identity
       parameters:
-        - name: 'body'
-          in: body
+        - name: ip
+          in: query
           required: true
-          description: 'New gateway identity parameters'
+          description: IP address of the gateway
           schema:
+            type: string
+        - name: port
+          in: query
+          required: true
+          description: Port number at which factory_configurator_client is running on the
+            gateway
+          schema:
+            type: number
+        - name: apiAddress
+          in: query
+          required: false
+          description: Pelion cloud API address to be used by gateway software
+          schema:
+            type: string
+            default: https://api.us-east-1.mbedcloud.com
+        - name: gatewayServicesAddress
+          in: query
+          required: false
+          description: Pelion cloud gateway service address to be used by gateway software
+          schema:
+            type: string
+            default: https://gateways.us-east-1.mbedcloud.com
+        - name: serialNumber
+          in: query
+          required: false
+          description: Retreive an identity with this specific serial number
+          schema:
+            type: string
+        - name: hardwareVersion
+          in: query
+          required: false
+          description: Retreive an identity for this hardware type. To find the supported
+            hardwareVersion, refer configuration section of
+            ./cli/lib/radioProfile.template.json
+          schema:
+            type: string
+        - name: radioConfig
+          in: query
+          required: false
+          description: Retreive an identity for this radio configuration. To find the
+            supported radioConfig, refer configuration section of
+            ./cli/lib/radioProfile.template.json
+          schema:
+            type: string
+        - name: ledConfig
+          in: query
+          required: false
+          description: Gateway status led configuration
+          schema:
+            type: string
+            default: "01"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GatewayIdentity"
+        "404":
+          description: Not found
+        "500":
+          description: An unexpected error occurred
+  /enrollment-id:
+    get:
+      description: Get enrollment identity of a gateway
+      parameters:
+        - name: serialNumber
+          in: query
+          required: true
+          description: Retreive an enrollment identity of this specific serial number
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+        "400":
+          description: Bad request
+        "500":
+          description: An unexpected error occurred
+  /enrollment-ids:
+    get:
+      description: Get list of enrollment identites of the dispatched gateways
+      parameters:
+        - name: limit
+          in: query
+          description: "Number of results to return, default: 50, maximum: 1000"
+          allowReserved: false
+          schema:
+            type: string
+        - name: order
+          in: query
+          description: "Order - ASC or DESC, default: DESC"
+          allowReserved: false
+          schema:
+            type: string
+        - name: last
+          in: query
+          description: The id of the last entry in the previous result. Used to mark the
+            start of the next page.
+          allowReserved: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnrollmentIdList"
+        "400":
+          description: Bad request
+        "500":
+          description: An unexpected error occurred
+servers:
+  - url: /
+components:
+  schemas:
+    EnrollmentIdList:
+      type: object
+      properties:
+        _links:
+          type: object
+          properties:
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+            next:
+              type: object
+              properties:
+                href:
+                  type: string
+        total_count:
+          type: number
+        limit:
+          type: number
+        order:
+          type: string
+        results:
+          type: array
+          items:
             type: object
             properties:
-              apiAddress:
-                type: string
-                example: 'https://api.us-east-1.mbedcloud.com'
-                description: 'Pelion cloud API address to be used by gateway software'
-              gatewayServicesAddress:
-                type: string
-                example: 'https://gateways.us-east-1.mbedcloud.com'
-                description: 'Pelion cloud gateway service address to be used by gateway software'
               serialNumber:
                 type: string
-                description: 'Specify the serial number of the gateway'
+              deviceID:
+                type: string
+              deployed:
+                type: boolean
               hardwareVersion:
                 type: string
-                example: 'rpi3bplus'
-                description: 'The type of the hardware. To find the supported hardwareVersion, refer configuration section of ./cli/lib/radioProfile.template.json'
               radioConfig:
                 type: string
-                example: '00'
-                description: 'The type of supported radios. To find the supported radioConfig, refer configuration section of ./cli/lib/radioProfile.template.json'
               ledConfig:
                 type: string
-                example: '01'
-                description: 'Gateway status led configuration'
-      responses:
-        '200':
-          description: Success
-        '500':
-          description: An unexpected error occurred
-    get:
-      description: 'Get a gateway identity'
-      parameters:
-        - name: 'ip'
-          in: query
-          required: true
+              category:
+                type: string
+              cloudAddress:
+                type: string
+              apiAddress:
+                type: string
+              gatewayServicesAddress:
+                type: string
+              enrollmentID:
+                type: string
+              createdAt:
+                type: number
+              _id:
+                type: string
+    GatewayIdentity:
+      type: object
+      properties:
+        serialNumber:
           type: string
-          description: 'IP address of the gateway'
-        - name: 'port'
-          in: query
-          required: true
+        OU:
+          type: string
+        deviceID:
+          type: string
+        deployed:
+          type: boolean
+        hardwareVersion:
+          type: string
+        radioConfig:
+          type: string
+        ledConfig:
+          type: string
+        category:
+          type: string
+        cloudAddress:
+          type: string
+        apiAddress:
+          type: string
+        gatewayServicesAddress:
+          type: string
+        enrollmentID:
+          type: string
+        createdAt:
           type: number
-          description: 'Port number at which factory_configurator_client is running on the gateway'
-        - name: 'apiAddress'
-          in: query
-          required: false
-          type: string
-          default: 'https://api.us-east-1.mbedcloud.com'
-          description: 'Pelion cloud API address to be used by gateway software'
-        - name: 'gatewayServicesAddress'
-          in: query
-          required: false
-          type: string
-          default: 'https://gateways.us-east-1.mbedcloud.com'
-          description: 'Pelion cloud gateway service address to be used by gateway software'
-        - name: 'serialNumber'
-          in: query
-          required: false
-          type: string
-          description: 'Retreive an identity with this specific serial number'
-        - name: 'hardwareVersion'
-          in: query
-          required: false
-          type: string
-          description: 'Retreive an identity for this hardware type. To find the supported hardwareVersion, refer configuration section of ./cli/lib/radioProfile.template.json'
-        - name: 'radioConfig'
-          in: query
-          required: false
-          type: string
-          description: 'Retreive an identity for this radio configuration. To find the supported radioConfig, refer configuration section of ./cli/lib/radioProfile.template.json'
-        - name: 'ledConfig'
-          in: query
-          required: false
-          type: string
-          default: '01'
-          description: 'Gateway status led configuration'
-      responses:
-        '200':
-          description: Success
-          schema:
-            $ref: '#/definitions/GatewayIdentity'
-        '404':
-          description: Not found
-        '500':
-          description: An unexpected error occurred
-  "/enrollment-id":
-    get:
-      description: 'Get enrollment identity of the gateway'
-      parameters:
-        - name: 'serialNumber'
-          in: query
-          required: true
-          type: string
-          description: 'Retreive an enrollment identity of this specific serial number'
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad request
-        '500':
-          description: An unexpected error occurred
-definitions:
-  GatewayIdentity:
-    type: object
-    properties:
-      serialNumber:
-        type: string
-      OU:
-        type: string
-      deviceID:
-        type: string
-      deployed:
-        type: boolean
-      hardwareVersion:
-        type: string
-      radioConfig:
-        type: string
-      ledConfig:
-        type: string
-      category:
-        type: string
-      cloudAddress:
-        type: string
-      apiAddress:
-        type: string
-      gatewayServicesAddress:
-        type: string
-      enrollmentID:
-        type: string
-      ssl:
-        type: object
-        properties:
-          client:
-            type: object
-            properties:
-              key:
-                type: string
-              certificate:
-                type: string
-          server:
-            type: object
-            properties:
-              key:
-                type: string
-              certificate:
-                type: string
-          ca:
-            type: object
-            properties:
-              ca:
-                type: string
-              intermediate:
-                type: string
+        ssl:
+          type: object
+          properties:
+            client:
+              type: object
+              properties:
+                key:
+                  type: string
+                certificate:
+                  type: string
+            server:
+              type: object
+              properties:
+                key:
+                  type: string
+                certificate:
+                  type: string
+            ca:
+              type: object
+              properties:
+                ca:
+                  type: string
+                intermediate:
+                  type: string

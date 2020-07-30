@@ -83,6 +83,10 @@ var IdentitySchema = new Schema({
     },
     enrollmentID: {
         type: String
+    },
+    createdAt: {
+        type: Number,
+        default: Date.now()
     }
 }, { versionKey: false });
 
