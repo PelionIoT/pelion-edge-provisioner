@@ -54,59 +54,56 @@ paths:
         - name: ip
           in: query
           required: true
-          description: IP address of the gateway
-          schema:
-            type: string
-        - name: port
+          type: string
+          description: 'IP address of the gateway'
+          allowReserved: true
+        - name: 'port'
           in: query
           required: true
-          description: Port number at which factory_configurator_client is running on the
-            gateway
-          schema:
-            type: number
-        - name: apiAddress
+          type: number
+          description: 'Port number at which factory_configurator_client is running on the gateway'
+          allowReserved: true
+        - name: 'apiAddress'
           in: query
           required: false
-          description: Pelion cloud API address to be used by gateway software
-          schema:
-            type: string
-            default: https://api.us-east-1.mbedcloud.com
-        - name: gatewayServicesAddress
+          type: string
+          default: 'https://api.us-east-1.mbedcloud.com'
+          description: 'Pelion cloud API address to be used by gateway software'
+          allowReserved: false
+        - name: 'gatewayServicesAddress'
           in: query
           required: false
-          description: Pelion cloud gateway service address to be used by gateway software
-          schema:
-            type: string
-            default: https://gateways.us-east-1.mbedcloud.com
-        - name: serialNumber
+          type: string
+          default: 'https://gateways.us-east-1.mbedcloud.com'
+          description: 'Pelion cloud gateway service address to be used by gateway software'
+          allowReserved: false
+        - name: 'serialNumber'
           in: query
           required: false
-          description: Retreive an identity with this specific serial number
-          schema:
-            type: string
-        - name: hardwareVersion
+          type: string
+          description: 'Retreive an identity with this specific serial number'
+          allowReserved: false
+        - name: 'hardwareVersion'
           in: query
           required: false
-          description: Retreive an identity for this hardware type. To find the supported
-            hardwareVersion, refer configuration section of
-            ./cli/lib/radioProfile.template.json
-          schema:
-            type: string
-        - name: radioConfig
+          type: string
+          default: 'arm-pelion-edge-gateway'
+          description: 'Retreive an identity for this hardware type.'
+          allowReserved: true
+        - name: 'radioConfig'
           in: query
           required: false
-          description: Retreive an identity for this radio configuration. To find the
-            supported radioConfig, refer configuration section of
-            ./cli/lib/radioProfile.template.json
-          schema:
-            type: string
-        - name: ledConfig
+          type: string
+          default: '00'
+          description: 'Retreive an identity for this radio configuration.'
+          allowReserved: true
+        - name: 'ledConfig'
           in: query
           required: false
-          description: Gateway status led configuration
-          schema:
-            type: string
-            default: "01"
+          type: string
+          default: '01'
+          description: 'Gateway status led configuration'
+          allowReserved: true
       responses:
         "200":
           description: Success
@@ -126,6 +123,7 @@ paths:
           in: query
           required: true
           description: Retreive an enrollment identity of this specific serial number
+          allowReserved: false
           schema:
             type: string
       responses:
