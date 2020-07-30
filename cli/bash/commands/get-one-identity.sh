@@ -52,11 +52,11 @@ Options:
 
 [ ! -n "$2" ] && cli_help_get_one_identity && exit 1
 
-OPTIND=1
+OPTIND=2
 
 QUERY=""
 
-while getopts 'a:g:s:w:r:l:c:i:p:hv' opt "${@:2}"; do
+while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
     case "$opt" in
         h|-help)
             cli_help_get_one_identity
@@ -139,6 +139,7 @@ fi
 if [ ! -z "$FCC_PORT" ]; then
     QUERY="$QUERY&port=$FCC_PORT"
 fi
+
 
 curl -G \
     --data-urlencode "serialNumber=$SERIAL_NUMBER" \
