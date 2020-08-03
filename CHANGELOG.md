@@ -5,10 +5,10 @@
 ### Additions
 - Added `GET /enrollment-ids` REST API to export enrollment identites of the dispatched gateways.
 - Added `list-enrollment-ids` command to pep command-line interface (CLI).
-- Addded URL encoding to REST API parameters which can contain reserve characters.
+- Addded URL encoding to REST API parameters, which can contain reserve characters.
 
-### Bugfixes
-- If Factory Configurator Utility (FCU) fails to provision the gateway then the identity is not saved in the database or marked as deployed, thus allowing user to re-request the identity with the same serial number.
+### Bug fix
+If Factory Configurator Utility (FCU) fails to provision the gateway, the identity is not saved in the database or marked as deployed, which allows the user to re-request the identity with the same serial number.
 
 ### Out of scope
 - Gateway provisioning in developer mode.
