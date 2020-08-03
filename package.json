@@ -1,6 +1,6 @@
 {
   "name": "pelion-edge-provisioner",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "It provisions the gateway for Pelion Edge solution to successfully and securely communicate with cloud",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
