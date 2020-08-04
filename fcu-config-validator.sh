@@ -35,7 +35,7 @@ usage() {
     echo "--- update-auth-certificate.der (optional)"
     echo "--- keystore"
     echo "--- --- CA_private.pem"
-    echo "--- --- CA_key.pem"
+    echo "--- --- CA_cert.pem"
     exit 1
 }
 

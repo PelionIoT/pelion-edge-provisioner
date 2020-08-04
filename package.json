@@ -1,6 +1,6 @@
 {
   "name": "pelion-edge-provisioner",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "It provisions the gateway for Pelion Edge solution to successfully and securely communicate with cloud",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,11 +12,13 @@
   "bugs": {
     "url": "https://github.com/armPelionEdge/pelion-edge-provisioner/issues"
   },
+  "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://github.com/armPelionEdge/pelion-edge-provisioner#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
     "colors": "^1.1.2",
     "express": "^4.16.2",
+    "hal": "^1.2.0",
     "jsonminify": "^0.4.1",
     "mongoose": "^5.8.4",
     "request": "^2.81.0"

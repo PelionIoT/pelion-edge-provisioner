@@ -52,11 +52,11 @@ Options:
 
 [ ! -n "$2" ] && cli_help_get_one_identity && exit 1
 
-OPTIND=1
+OPTIND=2
 
 QUERY=""
 
-while getopts 'a:g:s:w:r:l:c:i:p:hv' opt "${@:2}"; do
+while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
     case "$opt" in
         h|-help)
             cli_help_get_one_identity
@@ -116,18 +116,6 @@ if [ -z "$FCC_PORT" ]; then
     exit 1
 fi
 
-if [ ! -z "$API_URL" ]; then
-    QUERY="apiAddress=$API_URL"
-fi
-
-if [ ! -z "$GW_URL" ]; then
-    QUERY="$QUERY&gatewayServicesAddress=$GW_URL"
-fi
-
-if [ ! -z "$SERIAL_NUMBER" ]; then
-    QUERY="$QUERY&serialNumber=$SERIAL_NUMBER"
-fi
-
 if [ ! -z "$HW_VERSION" ]; then
     QUERY="$QUERY&hardwareVersion=$HW_VERSION"
 fi
@@ -152,5 +140,10 @@ if [ ! -z "$FCC_PORT" ]; then
     QUERY="$QUERY&port=$FCC_PORT"
 fi
 
-curl $PEP_SERVER_URL/$API_VERSION/identity?$QUERY $VERBOSE > "identity.json"
+
+curl -G \
+    --data-urlencode "serialNumber=$SERIAL_NUMBER" \
+    --data-urlencode "apiAddress=$API_URL" \
+    --data-urlencode "gatewayServicesAddress=$GW_URL" \
+    $PEP_SERVER_URL/$API_VERSION/identity?$QUERY $VERBOSE > "identity.json"
 cat ./identity.json
