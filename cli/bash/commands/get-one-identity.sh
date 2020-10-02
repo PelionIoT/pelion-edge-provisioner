@@ -25,6 +25,7 @@ fi
 
 API_URL="https://api.us-east-1.mbedcloud.com"
 GW_URL="https://gateways.us-east-1.mbedcloud.com"
+VERIFICATION_KEY="verification-key-does-not-exist"
 RADIO_CONFIG="00"
 LED_CONFIG="01"
 CATEGORY="production"
@@ -47,7 +48,12 @@ Options:
   -i <ip>                   ip address of the gateway where factory-configurator-client is running
   -p <port_number>          port number at which factory-configurator-client listening
   -v                        verbose
+  -k                        Setup Forward secure sealing and generate verification key
   -h                        output usage information"
+}
+
+setup_fss() {
+    VERIFICATION_KEY = $(sudo journalctl --setup-keys --interval=10s | sed -n'1p')
 }
 
 [ ! -n "$2" ] && cli_help_get_one_identity && exit 1
@@ -56,7 +62,7 @@ OPTIND=2
 
 QUERY=""
 
-while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
+while getopts 'a:g:s:w:r:l:c:i:k:p:hv' opt; do
     case "$opt" in
         h|-help)
             cli_help_get_one_identity
@@ -86,6 +92,9 @@ while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
         i)
             FCC_IP_ADDRESS="$OPTARG"
             ;;
+        k)
+            setup_fss
+            ;;    
         p)
             FCC_PORT="$OPTARG"
             ;;
@@ -145,5 +154,6 @@ curl -G \
     --data-urlencode "serialNumber=$SERIAL_NUMBER" \
     --data-urlencode "apiAddress=$API_URL" \
     --data-urlencode "gatewayServicesAddress=$GW_URL" \
-    $PEP_SERVER_URL/$API_VERSION/identity?$QUERY $VERBOSE > "identity.json"
+    --data-urlencode "verificationKey=$VERIFICATION_KEY" \
+    $PEP_SERVER_URL/$API_VERSION/identity?$QUERY $VERBOSE > "identity.json" 
 cat ./identity.json

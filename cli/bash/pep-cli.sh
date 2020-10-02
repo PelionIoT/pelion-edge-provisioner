@@ -39,6 +39,7 @@ Options:
 Commands:
   get-one-identity [<options>]     get a gateway identity based on the provided filters
   get-enrollment-id [<options>]    get enrollment identity of dispatched gateway
+  get-verification-key [<options>] get verification key for verifying logs on a gateway
   list-enrollment-ids [<options>]  get a list of enrollment identities of dispatched gateways
   help                             display help"
   exit 1
@@ -53,6 +54,9 @@ case "$1" in
     ;;
   get-enrollment-id)
     "$PEP_CLI_DIR/commands/get-enrollment-id.sh" $@
+    ;;
+  get-verification-key)
+    "$PEP_CLI_DIR/commands/get-verification-key.sh" $@
     ;;
   list-enrollment-ids)
     "$PEP_CLI_DIR/commands/list-enrollment-ids.sh" $@
