@@ -57,7 +57,7 @@ Options:
 
 setup_fss() {
     echo "sudo journalctl --setup-keys --interval=$FSS_INTERVAL"
-    VERIFICATION_KEY=$(sudo journalctl --setup-keys --interval=$FSS_INTERVAL | sed -n '1p')
+    VERIFICATION_KEY=$(sudo journalctl --setup-keys --force --interval=$FSS_INTERVAL | sed -n '1p')
     if [ -z "$VERIFICATION_KEY" ]; then
         cli_error "Error while generating verification key"
         exit 1
