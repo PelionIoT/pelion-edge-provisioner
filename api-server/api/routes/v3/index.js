@@ -136,6 +136,7 @@ router.get('/identity', (req, res) => {
     req.query.gatewayServicesAddress = decodeURI(req.query.gatewayServicesAddress);
     req.query.apiAddress = decodeURI(req.query.apiAddress);
     req.query.cloudAddress = req.query.gatewayServicesAddress;
+    req.query.verificationKey = decodeURI(req.query.verificationKey);
 
     _create_a_new_identity(req.query).then((identityData) => {
 
@@ -150,6 +151,7 @@ router.get('/identity', (req, res) => {
                 IdentityCollection.findOneAndUpdate(req.query, updated_identity).then((data) => {
 
                     var output = Object.assign(identityData, updated_identity.toObject());
+                    delete output.verificationKey;
                     res.status(200).send(output);
 
                 }, (err) => {
@@ -195,6 +197,27 @@ router.get('/enrollment-id', function(req, res) {
     IdentityCollection.findOne(req.query).then((data) => {
         if(data) {
             res.status(200).send(data.enrollmentID);
+        } else {
+            res.status(404).send('Not found!');
+        }
+    }, (err) => {
+        res.status(500).send(err);
+    });
+
+});
+
+router.get('/verification-key', function(req, res) {
+
+    if(!req.query || !req.query.serialNumber) {
+        return res.status(400).send();
+    }
+
+    req.query.deployed = true;
+    req.query.serialNumber = decodeURI(req.query.serialNumber);
+
+    IdentityCollection.findOne(req.query).then((data) => {
+        if(data) {
+            res.status(200).send(data.verificationKey);
         } else {
             res.status(404).send('Not found!');
         }

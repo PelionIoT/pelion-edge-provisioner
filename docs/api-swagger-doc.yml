@@ -102,6 +102,28 @@ paths:
           description: Bad request
         "500":
           description: An unexpected error occurred
+  /v3/verification-key:
+    get:
+      description: Get verification key for a gateway
+      parameters:
+        - name: serialNumber
+          in: query
+          required: true
+          description: Retreive verifivation key for a gateway of this specific serial number
+          allowReserved: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+        "400":
+          description: Bad request
+        "500":
+          description: An unexpected error occurred
   /v3/enrollment-ids:
     get:
       description: Get list of enrollment identites of the dispatched gateways
