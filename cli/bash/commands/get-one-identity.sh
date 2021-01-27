@@ -25,9 +25,12 @@ fi
 
 API_URL="https://api.us-east-1.mbedcloud.com"
 GW_URL="https://gateways.us-east-1.mbedcloud.com"
+VERIFICATION_KEY="verification-key-does-not-exist"
 RADIO_CONFIG="00"
 LED_CONFIG="01"
 CATEGORY="production"
+FSS_INTERVAL="10s"
+FSS="false"
 HW_VERSION="arm-pelion-edge-gateway"
 
 cli_help_get_one_identity() {
@@ -47,7 +50,18 @@ Options:
   -i <ip>                   ip address of the gateway where factory-configurator-client is running
   -p <port_number>          port number at which factory-configurator-client listening
   -v                        verbose
+  -k                        Setup Forward secure sealing and generate verification key. interval can be specified with '-e' option. Default interval is 10s
+  -e <interval>             Specify the change interval for the sealing key when generating an FSS key pair.
   -h                        output usage information"
+}
+
+setup_fss() {
+    echo "sudo journalctl --setup-keys --interval=$FSS_INTERVAL"
+    VERIFICATION_KEY=$(sudo journalctl --setup-keys --force --interval=$FSS_INTERVAL | sed -n '1p')
+    if [ -z "$VERIFICATION_KEY" ]; then
+        cli_error "Error while generating verification key"
+        exit 1
+    fi
 }
 
 [ ! -n "$2" ] && cli_help_get_one_identity && exit 1
@@ -56,7 +70,7 @@ OPTIND=2
 
 QUERY=""
 
-while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
+while getopts 'a:g:s:w:r:l:c:i:ke:p:hv' opt; do
     case "$opt" in
         h|-help)
             cli_help_get_one_identity
@@ -86,6 +100,12 @@ while getopts 'a:g:s:w:r:l:c:i:p:hv' opt; do
         i)
             FCC_IP_ADDRESS="$OPTARG"
             ;;
+        k)
+            FSS="true"
+            ;;    
+        e)  
+            FSS_INTERVAL="$OPTARG"
+            ;;   
         p)
             FCC_PORT="$OPTARG"
             ;;
@@ -140,10 +160,15 @@ if [ ! -z "$FCC_PORT" ]; then
     QUERY="$QUERY&port=$FCC_PORT"
 fi
 
+if [[ $FSS = "true" ]]
+then
+    setup_fss
+fi
 
 curl -G \
     --data-urlencode "serialNumber=$SERIAL_NUMBER" \
     --data-urlencode "apiAddress=$API_URL" \
     --data-urlencode "gatewayServicesAddress=$GW_URL" \
-    $PEP_SERVER_URL/$API_VERSION/identity?$QUERY $VERBOSE > "identity.json"
+    --data-urlencode "verificationKey=$VERIFICATION_KEY" \
+    $PEP_SERVER_URL/$API_VERSION/identity?$QUERY $VERBOSE > "identity.json" 
 cat ./identity.json

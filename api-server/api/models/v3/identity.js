@@ -59,6 +59,9 @@ var IdentitySchema = new Schema({
         type: String,
         required: true
     },
+    verificationKey: {
+        type: String
+    },
     apiAddress: {
         type: String
     },
