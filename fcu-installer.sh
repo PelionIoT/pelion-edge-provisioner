@@ -38,7 +38,7 @@ echo "Extracting the fcu archive to $FCU_ARCHIVE_DIR"
 unzip -o $dir/$FCU_CONFIG_DIR/factory_configurator_utility.zip -d $FCU_ARCHIVE_DIR
 
 echo "Setting up virtual environment to $FCU_VIRTUAL_ENV"
-python3.6 -m venv $FCU_VIRTUAL_ENV
+python3 -m virtualenv $FCU_VIRTUAL_ENV
 
 $FCU_VIRTUAL_ENV/bin/pip --version
 $FCU_VIRTUAL_ENV/bin/pip install --upgrade pip
