@@ -41,7 +41,10 @@ RUN npm install
 
 # To setup virtual environment
 RUN apt-get update && apt-get install -y \
-    python3-venv
+    python3-distutils
+
+RUN curl https://bootstrap.pypa.io/get-pip.py -O && python3 get-pip.py
+RUN python3 -m pip install virtualenv
 
 # Install fcu
 RUN ./fcu-installer.sh $fcu_config
