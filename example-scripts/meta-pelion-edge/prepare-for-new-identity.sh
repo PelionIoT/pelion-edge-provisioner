@@ -21,6 +21,7 @@ EDGE_GW_CONFIG_DIR="/userdata/edge_gw_config/"
 PDM_CRED_DIR="/userdata/mbed/mcc_config"
 
 # Halt edge-core's execution
+systemctl mask edge-core
 systemctl stop edge-core
 echo "Stopped edge-core"
 
