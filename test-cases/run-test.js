@@ -20,14 +20,19 @@
 const Mocha = require('mocha');
 const fs = require('fs');
 const path = require('path');
+const glob = require('glob');
 
-process.env.PEP_SERVER_URL = "http://localhost:5151";
-process.env.API_VERSION = "v3";
+Mocha.reporters.Base.symbols.ok = "[PASS]";
+Mocha.reporters.Base.symbols.err = "[FAIL]";
 
-global.pep_server = require('./../api-wrapper-js');
+global.pep_server = require('./api-wrapper-js');
 
 const Logger = require('./../utils/logger');
 global.logger = new Logger({"moduleName": 'mocha-tests'});
+
+process.env = Object.assign(require('./config.json'), process.env);
+
+const api_server = require('./../api-server/index.js');
 
 function execute(tc) {
 
@@ -69,8 +74,68 @@ function execute(tc) {
 
 }
 
-execute(__dirname + '/' + process.argv[2]).then(() => {
-    logger.info("Success!");
-}, (err) => {
-    logger.error("Failed ", err);
-});
+function run(tc) {
+
+    return new Promise((resolve, reject) => {
+
+        execute(tc).then(function () {
+            resolve();
+        }, function (err) {
+            reject(err);
+        });
+    });
+
+}
+
+setTimeout(() => {
+
+    var test_path = path.join(__dirname, process.env.EXECUTE_TEST_CASE);
+
+    if(fs.lstatSync(test_path).isDirectory()) {
+
+        var getTestFiles = function (src, callback) {
+            return new Promise((resolve, reject) => {
+                glob(src + '/**/*', (err, res) => {
+                    if(err) {
+                        return reject(err);
+                    }
+                    resolve(res.filter(f => f.indexOf('.js') > -1));
+                });
+            });
+        };
+
+        getTestFiles(test_path).then((tests) => {
+
+            var inx = 0;
+            function next() {
+                if(inx < tests.length) {
+                    run(tests[inx]).then(() => {
+                        inx++;
+                        next();
+                    }, (err) => {
+                        logger.error("Failed with error " + JSON.stringify(err, null, 4));
+                        process.exit(1);
+                    });
+                } else {
+                    logger.info("Success!");
+                    process.exit(0);
+                }
+            }
+
+            next();
+        }, (err) => {
+            logger.error("failed to get test files " + JSON.stringify(err, null ,4));
+            process.exit(1);
+        });
+
+    } else {
+        run(test_path).then(() => {
+            logger.info("Success!");
+            process.exit(0);
+        }, (err) => {
+            logger.error("Failed with error " + JSON.stringify(err, null, 4));
+            process.exit(1);
+        });
+    }
+
+}, 5000);

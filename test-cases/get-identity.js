@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
+describe('Test PEP API server, should generate and return a new identity?', function() {
 
-describe('Test GET /identity, get the example gateway identity?', function() {
+    var serialNumber = "DEV" + Math.random().toString().substr(2, 6);
 
-    it('Response should return saved identity json', function(done) {
+    it('Response should return new identity in json format', function(done) {
 
-        var identity = JSON.parse(fs.readFileSync(__dirname + '/example-identity.json'), 'utf8');
-
-        pep_server.get_one_identity({
-            serialNumber: identity.serialNumber
-        }).then((data) => {
+        pep_server.get_one_identity(Object.assign({
+            serialNumber: serialNumber,
+            port: process.env.FCCE_PORT,
+            ip: process.env.FCCE_IP
+        }, process.env.GET_IDENTITY_PARAMS)).then((data) => {
 
             if(data) {
                 try {
@@ -45,6 +45,24 @@ describe('Test GET /identity, get the example gateway identity?', function() {
             done(err);
         });
 
+    });
+
+    it('Response should return enrollment identity', function(done) {
+
+        pep_server.get_enrollment_identity(serialNumber).then((enrollIdentityData) => {
+            done();
+        }, (err) => {
+            done(err);
+        });
+    });
+
+    it('Response should return array of enrollment identities', function(done) {
+
+        pep_server.get_enrollment_identities().then(() => {
+            done();
+        }, (err) => {
+            done(err);
+        });
     });
 
 });
