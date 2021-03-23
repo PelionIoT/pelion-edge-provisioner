@@ -1,1 +1,0 @@
-Make sure you are running fcc-example on the gateway with ip=10.118.122.71 at port=38638. Also inspect the pep-api-server logs to know more about this error - docker logs -f pep-api-server
