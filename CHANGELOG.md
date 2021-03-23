@@ -1,5 +1,11 @@
 # Release notes
 
+## Pelion Edge provisioner v2.4.0
+
+### Features
+- Created new example script to install Pelion Edge credentials on Parsec + TPM enabled builds.   
+- Updated installation commands to work with latest version of Factory Configurator Utility (FCU).
+
 ## Pelion Edge provisioner v2.3.0
 
 ### Features
