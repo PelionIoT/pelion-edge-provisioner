@@ -22,8 +22,6 @@ const mongoose = require('mongoose');
 const exec = require('child_process').exec;
 const hal = require('hal');
 
-const create_identity = require('./create_identity');
-
 const Logger = require('./../../../../utils/logger');
 const logger = new Logger( {moduleName: 'api-v3'});
 
@@ -45,21 +43,18 @@ var _create_a_new_identity = function(params) {
                 })
             }
 
-            create_identity(params).then((identity) => {
+            let identity = JSON.parse(JSON.stringify(params));
+            let doc = new IdentityCollection(identity);
 
-                let doc = new IdentityCollection(identity);
-
-                doc.save((err, data) => {
-                    if(err) {
-                        reject({
-                            code: 500,
-                            message: err
-                        });
-                    } else {
-                        // We cannot use `data` as identity has ssl information which is not saved in mongo
-                        resolve(identity);
-                    }
-                });
+            doc.save((err, data) => {
+                if(err) {
+                    reject({
+                        code: 500,
+                        message: err
+                    });
+                } else {
+                    resolve(identity);
+                }
             });
         });
 
