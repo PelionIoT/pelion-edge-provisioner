@@ -1,6 +1,6 @@
 # Pelion Edge provisioning (pep) tool
 
-The Pelion Edge provisioning (pep) tool lets you automate the gateway provisioning flow. For more information, please see the [documentation](https://developer.pelion.com/docs/device-management-edge/2.1/provisioning/index.html).
+The Pelion Edge provisioning (pep) tool lets you automate the gateway provisioning flow. For more information, please see the [documentation](https://developer.pelion.com/docs/device-management-edge/latest/provisioning/index.html).
 
 ## Issues
 
