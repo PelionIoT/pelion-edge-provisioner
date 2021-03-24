@@ -1,9 +1,15 @@
 # Release notes
 
+## Pelion Edge provisioner v2.5.0
+
+### Features
+- Fixed Readme link to point to latest version.
+- Removed the generation of self-signed certificate as gateway services authenticate using device's LwM2M certificate.
+
 ## Pelion Edge provisioner v2.4.0
 
 ### Features
-- Created new example script to install Pelion Edge credentials on Parsec + TPM enabled builds.   
+- Created new example script to install Pelion Edge credentials on Parsec + TPM enabled builds.
 - Updated installation commands to work with latest version of Factory Configurator Utility (FCU).
 
 ## Pelion Edge provisioner v2.3.0
