@@ -1,5 +1,10 @@
 # Release notes
 
+## Pelion Edge provisioner v2.5.1
+
+### Features
+- Added execute permissions to install scripts.
+
 ## Pelion Edge provisioner v2.5.0
 
 ### Features
