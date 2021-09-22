@@ -77,7 +77,7 @@ router.get('/identity', (req, res) => {
 
             try {
 
-                var command = 'export LC_ALL=C.UTF-8; export LANG=C.UTF-8; FCU_HOME_DIR=/opt/fcu-package /opt/fcu-ve/bin/python3.6 \
+                var command = 'export LC_ALL=C.UTF-8; export LANG=C.UTF-8; FCU_HOME_DIR=/opt/fcu-package /opt/fcu-ve/bin/python3 \
                 /opt/fcu-package/ft_demo/sources/ft_demo.py inject --endpoint-name=' + identity.serialNumber +' --serial-number='+ identity.serialNumber + ' \
                 tcp --ip='+ remoteAddress + ' --port=' + remotePort;
 
