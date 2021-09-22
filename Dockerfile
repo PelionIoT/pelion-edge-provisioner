@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 WORKDIR /usr/local/src
 
@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -y \
     iputils-ping \
     software-properties-common
 
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get update && apt-get install -y \
     nodejs
 
