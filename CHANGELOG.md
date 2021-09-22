@@ -1,5 +1,11 @@
 # Release notes
 
+## Pelion Edge provisioner v2.6.0
+
+### Bug fixes
+- Upgraded the docker base image from Bionic to Focal and fixed the compatibility issues with latest FCU v1.2.15. This resolves the error `cbor2-5.2.0- UnicodeDecodeError: ascii codec can't decode byte` caused when executing the docker build step.
+- Upgraded the docker image's node version to 14.x LTS.
+
 ## Pelion Edge provisioner v2.5.1
 
 ### Features
