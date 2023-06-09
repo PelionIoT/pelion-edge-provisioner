@@ -1,5 +1,9 @@
 # Release notes
 
+## Izuma Edge provisioner v2.7.0
+
+- Izuma branding (Pelion -> Izuma Networks) and related URL changes.
+
 ## Pelion Edge provisioner v2.6.0
 
 ### Bug fixes
@@ -58,9 +62,9 @@ If Factory Configurator Utility (FCU) fails to provision the gateway, the identi
 ## Pelion Edge provisioner v2.1.0
 
 ### Additions
-- The gateway initiates certificate injection, instead of [Factory Configurator Utility (FCU)](https://www.pelion.com/docs/device-management/current/provisioning-process/index.html), which initiates the injection in the [default Device Management provisioning flow](https://www.pelion.com/docs/device-management/current/provisioning-process/index.html).
-- The Pelion Edge provisioning (pep) tool records the enrollment identity and configuration information of all provisioned gateways.
-- Integrates default Pelion Device Management provisioning tools - Factory Configurator Utility (FCU) and Factory Configurator Client (FCC).
+- The gateway initiates certificate injection, instead of [Factory Configurator Utility (FCU)](https://developer.izumanetworks.com/docs/device-management/current/provisioning-process/index.html), which initiates the injection in the [default Device Management provisioning flow](https://developer.izumanetworks.com/docs/device-management/current/provisioning-process/index.html).
+- The Izuma Edge provisioning (pep) tool records the enrollment identity and configuration information of all provisioned gateways.
+- Integrates default Izuma Device Management provisioning tools - Factory Configurator Utility (FCU) and Factory Configurator Client (FCC).
 - Gateway provisioning in production mode.
 - Pep API server hosts REST calls:
 	- `GET /identity` to create and dispatch new gateway identities.

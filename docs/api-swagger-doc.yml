@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   version: "3"
-  title: pep (pelion-edge-provisioner)
-  description: APIs to help provision the Pelion Edge gateway in production mode.
+  title: pep (Izuma-edge-provisioner)
+  description: APIs to help provision the Izuma Edge gateway in production mode.
 paths:
   /v3/identity:
     get:
@@ -25,7 +25,7 @@ paths:
         - name: 'apiAddress'
           in: query
           required: false
-          description: 'Pelion cloud API address to be used by gateway software'
+          description: 'Izuma cloud API address to be used by gateway software'
           allowReserved: false
           schema:
             type: string
@@ -33,7 +33,7 @@ paths:
         - name: 'gatewayServicesAddress'
           in: query
           required: false
-          description: 'Pelion cloud gateway service address to be used by gateway software'
+          description: 'Izuma cloud gateway service address to be used by gateway software'
           allowReserved: false
           schema:
             type: string
@@ -52,7 +52,7 @@ paths:
           allowReserved: true
           schema:
             type: string
-            default: 'arm-pelion-edge-gateway'
+            default: 'izuma-edge-gateway'
         - name: 'radioConfig'
           in: query
           required: false

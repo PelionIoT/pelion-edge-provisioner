@@ -37,19 +37,19 @@ mkdir -p "$FCU_VIRTUAL_ENV"
 
 # Extract the FCU archive
 echo "Extracting the fcu archive to $FCU_ARCHIVE_DIR"
-unzip -o "$dir/$FCU_CONFIG_DIR/factory_configurator_utility.zip" -d "$FCU_ARCHIVE_DIR"
+unzip -o "$FCU_CONFIG_DIR/factory_configurator_utility.zip" -d "$FCU_ARCHIVE_DIR"
 
 echo "Setting up virtual environment to $FCU_VIRTUAL_ENV"
 python3 -m virtualenv "$FCU_VIRTUAL_ENV"
 
-$FCU_VIRTUAL_ENV/bin/pip --version
-$FCU_VIRTUAL_ENV/bin/pip install --upgrade pip
+"$FCU_VIRTUAL_ENV/bin/pip" --version
+"$FCU_VIRTUAL_ENV/bin/pip" install --upgrade pip
 
 install_package_command="$FCU_VIRTUAL_ENV/bin/pip install fcu -f $FCU_ARCHIVE_DIR/fcu --upgrade"
 echo "Installing the fcu python packages using command - $install_package_command"
 
-$install_package_command
-if [ $? -ne 0 ]; then
+
+if [ "$install_package_command" -ne 0 ]; then
     echo "Failed to install FCU packages!"
     exit 1
 else
@@ -57,7 +57,7 @@ else
 fi
 
 echo "Copying the fcu.yml provided in the configuration_dir=$FCU_CONFIG_DIR"
-cp $FCU_CONFIG_DIR/fcu.yml "$FCU_ARCHIVE_DIR/config/"
+cp "$FCU_CONFIG_DIR/fcu.yml" "$FCU_ARCHIVE_DIR/config/"
 
 if [ -d "$FCU_CONFIG_DIR/keystore" ]; then
     echo "CA is provided, copying it to fcu keystore"
