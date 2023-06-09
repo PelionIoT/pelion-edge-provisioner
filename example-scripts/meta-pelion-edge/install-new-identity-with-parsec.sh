@@ -1,4 +1,8 @@
+#!/bin/bash
+#
 # Copyright (c) 2021, Arm Limited and affiliates.
+# Copyright (c) 2023, Izuma Networks
+#
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,8 +27,8 @@ PDM_CRED_DIR="/userdata/mbed/mcc_config"
 PDM_CRED_SUBDIR="/userdata/mbed/mcc_config/pst"
 
 # Move the identity.json to location as per maestro config
-mkdir -p $EDGE_GW_CONFIG_DIR
-mv $IDENTITY_JSON_FILE $EDGE_GW_CONFIG_DIR
+mkdir -p "$EDGE_GW_CONFIG_DIR"
+mv "$IDENTITY_JSON_FILE" "$EDGE_GW_CONFIG_DIR"
 echo "Successfully installed identity.json at $EDGE_GW_CONFIG_DIR$IDENTITY_JSON_FILE"
 
 [ -d "$PDM_CRED_SUBDIR" ] && echo "Found device management credentials in PSA trusted storage at $PDM_CRED_DIR." \

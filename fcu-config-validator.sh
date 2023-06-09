@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Copyright (c) 2020, Arm Limited and affiliates.
+# Copyright (c) 2020, Izuma Networks
+#
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,10 +24,10 @@ if [[ $1 == "" ]]; then
     exit 1
 fi
 
-FCU_CONFIG_DIR=`pwd`"/$1"
-echo "Verifying fcu configuration- $FCU_CONFIG_DIR"
+FCU_CONFIG_DIR=$(pwd)"/$1"
+echo "Verifying fcu configuration: $FCU_CONFIG_DIR"
 
-ls $FCU_CONFIG_DIR
+ls "$FCU_CONFIG_DIR"
 
 usage() {
     echo "FCU configuration folder should have - "
@@ -39,22 +41,22 @@ usage() {
     exit 1
 }
 
-if [ ! -e $FCU_CONFIG_DIR/factory_configurator_utility.zip ]; then
+if [ ! -e "$FCU_CONFIG_DIR/factory_configurator_utility.zip" ]; then
     echo "Couldn't find factory_configurator_utility.zip in $FCU_CONFIG_DIR"
     usage
 fi
 
-if [ ! -e $FCU_CONFIG_DIR/fcu.yml ]; then
+if [ ! -e "$FCU_CONFIG_DIR/fcu.yml" ]; then
     echo "Couldn't find fcu.yml in $FCU_CONFIG_DIR"
     usage
 fi
 
-if [ ! -d $FCU_CONFIG_DIR/keystore ]; then
+if [ ! -d "$FCU_CONFIG_DIR/keystore" ]; then
     echo "Couldn't find certificate authority in $FCU_CONFIG_DIR"
     usage
 fi
 
-if [ ! -e $FCU_CONFIG_DIR/update-auth-certificate.der ]; then
+if [ ! -e "$FCU_CONFIG_DIR/update-auth-certificate.der" ]; then
     echo "WARN, No update auth certificate found!"
 fi
 
