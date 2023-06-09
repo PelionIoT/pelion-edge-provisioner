@@ -31,7 +31,7 @@ const logger = new Logger( {moduleName: 'pep-api-server-main', color: 'bgBlue'} 
 
 //Configuration
 const config = JSON.parse(jsonminify(fs.readFileSync(__dirname + '/config.json', 'utf8')));
-const port = config.port || 5151;
+const port = process.env.PEP_SERVER_PORT || config.port || 5151;
 global.rdLogLevel = config.logLevel || 2;
 
 require('./api/models/v3/identity');
