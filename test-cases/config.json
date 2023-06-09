@@ -1,0 +1,18 @@
+{
+    "PEP_SERVER_URL": "http://localhost:5252",
+    "PEP_SERVER_PORT": "5252",
+    "API_VERSION": "v3",
+    "MOCHA_TIMEOUT": "15000",
+    "EXECUTE_TEST_CASE": "./get-identity.js",
+    "LOG_LEVEL": "TRACE",
+    "FCCE_PORT": "7777",
+    "FCCE_IP": "localhost",
+    "GET_IDENTITY_PARAMS": {
+        "hardwareVersion": "arm-pelion-edge-gateway",
+        "radioConfig": "00",
+        "ledConfig": "01",
+        "category": "development",
+        "apiAddress": "https://api.us-east-1.mbedcloud.com",
+        "gatewayServicesAddress": "https://gateways.us-east-1.mbedcloud.com"
+    }
+}
