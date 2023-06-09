@@ -1,6 +1,6 @@
-# Pelion Edge provisioning (pep) tool
+# Izuma Edge provisioning (pep) tool
 
-The Pelion Edge provisioning (pep) tool lets you automate the gateway provisioning flow. For more information, please see the [documentation](https://developer.pelion.com/docs/device-management-edge/latest/provisioning/index.html).
+The Izuma Edge provisioning (pep) tool lets you automate the gateway provisioning flow. For more information, please see the [documentation](https://developer.izumanetworks.com/docs/device-management-edge/latest/provisioning/index.html).
 
 ## Tests
 
