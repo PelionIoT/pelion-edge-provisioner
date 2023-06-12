@@ -21,6 +21,11 @@
 
 set -e
 
+if [[ "$EUID" -gt 0 ]]; then
+  echo "This script must be run via sudo (or as root) - can't run systemctl mask commands otherwise."
+  exit 1
+fi
+
 EDGE_GW_CONFIG_DIR="/userdata/edge_gw_config/"
 PDM_CRED_DIR="/userdata/mbed/mcc_config"
 

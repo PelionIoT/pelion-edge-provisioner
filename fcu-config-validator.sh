@@ -56,8 +56,9 @@ if [ ! -d "$FCU_CONFIG_DIR/keystore" ]; then
     usage
 fi
 
-if [ ! -e "$FCU_CONFIG_DIR/update-auth-certificate.der" ]; then
-    echo "WARN, No update auth certificate found!"
+UPDATE_CERT="dev.cert.der"
+if [ ! -e "$FCU_CONFIG_DIR/$UPDATE_CERT" ]; then
+    echo "WARN, No update auth certificate ($UPDATE_CERT) found!"
 fi
 
 echo "FCU configuration looks good, try installing it."

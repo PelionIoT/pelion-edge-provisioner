@@ -49,7 +49,7 @@ install_package_command="$FCU_VIRTUAL_ENV/bin/pip install fcu -f $FCU_ARCHIVE_DI
 echo "Installing the fcu python packages using command - $install_package_command"
 
 
-if [ "$install_package_command" -ne 0 ]; then
+if $($install_package_command); then
     echo "Failed to install FCU packages!"
     exit 1
 else
@@ -67,9 +67,10 @@ if [ -d "$FCU_CONFIG_DIR/keystore" ]; then
     ls "$FCU_ARCHIVE_DIR/keystore"
 fi
 
-if [ -e "$FCU_CONFIG_DIR/update-auth-certificate.der" ]; then
-    echo "Found firmware update certificate, adding this to the fcu resources"
-    cp "$FCU_CONFIG_DIR/update-auth-certificate.der" "$FCU_ARCHIVE_DIR/resources/update-auth-certificate.der"
+UPDATE_CERT="dev.cert.der"
+if [ -e "$FCU_CONFIG_DIR/$UPDATE_CERT" ]; then
+    echo "Found firmware update certificate $UPDATE_CERT, adding this to the fcu resources"
+    cp "$FCU_CONFIG_DIR/$UPDATE_CERT" "$FCU_ARCHIVE_DIR/resources/$UPDATE_CERT"
 else
     echo "WARN, No update auth certificate found!"
 fi
