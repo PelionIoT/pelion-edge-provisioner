@@ -19,6 +19,13 @@
 
 set -e
 
+UPDATE_CERT="dev.cert.der"
+FACTORY_ZIP="factory_configurator_utility.zip"
+KEYSTORE="keystore"
+CA_PRIVATE="CA_private.pem"
+CA_CERT="CA_cert.pem"
+FCU="fcu.yml"
+
 if [[ $1 == "" ]]; then
     echo "Please provide the relative fcu configuration directory path!"
     exit 1
@@ -31,34 +38,39 @@ ls "$FCU_CONFIG_DIR"
 
 usage() {
     echo "FCU configuration folder should have - "
-    echo "<fcu_config_dir>"
-    echo "--- fcu.yml"
-    echo "--- factory_configurator_utility.zip"
-    echo "--- update-auth-certificate.der (optional)"
-    echo "--- keystore"
-    echo "--- --- CA_private.pem"
-    echo "--- --- CA_cert.pem"
+    echo "$FCU_CONFIG_DIR"
+    echo "--- $FCU"
+    echo "--- $FACTORY_ZIP"
+    echo "--- $UPDATE_CERT (optional)"
+    echo "--- $KEYSTORE"
+    echo "--- --- $CA_PRIVATE"
+    echo "--- --- $CA_CERT"
     exit 1
 }
 
-if [ ! -e "$FCU_CONFIG_DIR/factory_configurator_utility.zip" ]; then
-    echo "Couldn't find factory_configurator_utility.zip in $FCU_CONFIG_DIR"
+if [ ! -e "$FCU_CONFIG_DIR/$FACTORY_ZIP" ]; then
+    echo "ERROR: Could not find $FACTORY_ZIP in $FCU_CONFIG_DIR"
     usage
 fi
 
-if [ ! -e "$FCU_CONFIG_DIR/fcu.yml" ]; then
-    echo "Couldn't find fcu.yml in $FCU_CONFIG_DIR"
+if [ ! -e "$FCU_CONFIG_DIR/$FCU" ]; then
+    echo "ERROR: Could not find fcu.yml in $FCU_CONFIG_DIR"
     usage
 fi
 
-if [ ! -d "$FCU_CONFIG_DIR/keystore" ]; then
-    echo "Couldn't find certificate authority in $FCU_CONFIG_DIR"
+if [ ! -e "$FCU_CONFIG_DIR/$KEYSTORE/$CA_PRIVATE" ]; then
+    echo "ERROR: Could not find $FCU_CONFIG_DIR/$KEYSTORE/$CA_PRIVATE"
     usage
 fi
 
-UPDATE_CERT="dev.cert.der"
+if [ ! -e "$FCU_CONFIG_DIR/$KEYSTORE/$CA_CERT" ]; then
+    echo "ERROR: Could not find $FCU_CONFIG_DIR/$KEYSTORE/$CA_CERT"
+    usage
+fi
+
 if [ ! -e "$FCU_CONFIG_DIR/$UPDATE_CERT" ]; then
-    echo "WARN, No update auth certificate ($UPDATE_CERT) found!"
+    echo "WARNING, No update auth certificate ($UPDATE_CERT) found!"
 fi
 
+# Check
 echo "FCU configuration looks good, try installing it."
