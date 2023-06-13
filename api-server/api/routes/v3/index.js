@@ -98,7 +98,7 @@ router.get('/identity', (req, res) => {
 
                 cmd_cp.on('close', function(code) {
 
-                    logger.info("Exicted with code " + code);
+                    logger.info("Exited with code " + code);
                     logger.info(stdbuf);
 
                     if(code != 0) {
