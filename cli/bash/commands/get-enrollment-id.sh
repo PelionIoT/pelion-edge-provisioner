@@ -23,6 +23,7 @@ if [ -n "$DEBUG" ]; then
     set -x
 fi
 
+# shellcheck disable=SC1091
 . "$PEP_CLI_DIR/common.sh"
 
 cli_help_get_enrollment_id() {

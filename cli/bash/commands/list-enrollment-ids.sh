@@ -21,6 +21,7 @@ if [ ! -z "$DEBUG" ]; then
     set -x
 fi
 
+# shellcheck disable=SC1091
 . "$PEP_CLI_DIR/common.sh"
 
 ORDER="DESC"

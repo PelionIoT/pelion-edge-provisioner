@@ -20,17 +20,17 @@
 set -e
 
 if [[ $1 == "" ]]; then
-    echo "Please provide the relative fcu configuration directory path!"
+    echo "Please provide the relative FCU configuration directory path!"
     exit 1
 fi
+
+FCU_ARCHIVE_DIR=/opt/fcu-package
+FCU_VIRTUAL_ENV=/opt/fcu-ve
 
 FCU_CONFIG_DIR=$(pwd)"/$1"
 echo "Installing FCU configuration: $FCU_CONFIG_DIR"
 
 ls "$FCU_CONFIG_DIR"
-
-FCU_ARCHIVE_DIR=/opt/fcu-package
-FCU_VIRTUAL_ENV=/opt/fcu-ve
 
 mkdir -p "$FCU_ARCHIVE_DIR"
 mkdir -p "$FCU_VIRTUAL_ENV"
@@ -48,7 +48,8 @@ python3 -m virtualenv "$FCU_VIRTUAL_ENV"
 install_package_command="$FCU_VIRTUAL_ENV/bin/pip install fcu -f $FCU_ARCHIVE_DIR/fcu --upgrade"
 echo "Installing the fcu python packages using command - $install_package_command"
 
-
+# Can't get this to work with eval, so suppressing.
+# shellcheck disable=SC2091
 if $($install_package_command); then
     echo "Failed to install FCU packages!"
     exit 1
@@ -56,7 +57,7 @@ else
     echo "FCU tool is installed succesfully!"
 fi
 
-echo "Copying the fcu.yml provided in the configuration_dir=$FCU_CONFIG_DIR"
+echo "Copying the fcu.yml provided in the configuration_dir=$FCU_CONFIG_DIR to $FCU_ARCHIVE_DIR/config/"
 cp "$FCU_CONFIG_DIR/fcu.yml" "$FCU_ARCHIVE_DIR/config/"
 
 if [ -d "$FCU_CONFIG_DIR/keystore" ]; then
@@ -67,13 +68,15 @@ if [ -d "$FCU_CONFIG_DIR/keystore" ]; then
     ls "$FCU_ARCHIVE_DIR/keystore"
 fi
 
-UPDATE_CERT="dev.cert.der"
+UPDATE_CERT="update-auth-certificate.der"
 if [ -e "$FCU_CONFIG_DIR/$UPDATE_CERT" ]; then
-    echo "Found firmware update certificate $UPDATE_CERT, adding this to the fcu resources"
+    echo "Found firmware update certificate $UPDATE_CERT, adding this to the FCU resources"
     cp "$FCU_CONFIG_DIR/$UPDATE_CERT" "$FCU_ARCHIVE_DIR/resources/$UPDATE_CERT"
 else
     echo "WARN, No update auth certificate found!"
 fi
+
+ls -al "$FCU_ARCHIVE_DIR/resources/"
 
 echo "Installing the python requirements for ft_demo tool..."
 "$FCU_VIRTUAL_ENV/bin/pip" install -r "$FCU_ARCHIVE_DIR/ft_demo/sources/requirements.txt" --upgrade

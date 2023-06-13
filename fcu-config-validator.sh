@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Copyright (c) 2020, Arm Limited and affiliates.
-# Copyright (c) 2020, Izuma Networks
+# Copyright (c) 2023, Izuma Networks
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -19,7 +19,7 @@
 
 set -e
 
-UPDATE_CERT="dev.cert.der"
+UPDATE_CERT="update-auth-certificate.der"
 FACTORY_ZIP="factory_configurator_utility.zip"
 KEYSTORE="keystore"
 CA_PRIVATE="CA_private.pem"
@@ -41,7 +41,7 @@ usage() {
     echo "$FCU_CONFIG_DIR"
     echo "--- $FCU"
     echo "--- $FACTORY_ZIP"
-    echo "--- $UPDATE_CERT (optional)"
+    echo "--- $UPDATE_CERT"
     echo "--- $KEYSTORE"
     echo "--- --- $CA_PRIVATE"
     echo "--- --- $CA_CERT"
@@ -54,7 +54,7 @@ if [ ! -e "$FCU_CONFIG_DIR/$FACTORY_ZIP" ]; then
 fi
 
 if [ ! -e "$FCU_CONFIG_DIR/$FCU" ]; then
-    echo "ERROR: Could not find fcu.yml in $FCU_CONFIG_DIR"
+    echo "ERROR: Could not find $FCU in $FCU_CONFIG_DIR"
     usage
 fi
 
@@ -69,7 +69,8 @@ if [ ! -e "$FCU_CONFIG_DIR/$KEYSTORE/$CA_CERT" ]; then
 fi
 
 if [ ! -e "$FCU_CONFIG_DIR/$UPDATE_CERT" ]; then
-    echo "WARNING, No update auth certificate ($UPDATE_CERT) found!"
+    echo "ERROR: No update auth certificate ($UPDATE_CERT) found!"
+    usage
 fi
 
 # Check

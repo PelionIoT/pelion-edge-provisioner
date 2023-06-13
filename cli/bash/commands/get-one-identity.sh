@@ -20,7 +20,7 @@ set -e
 if [ ! -z "$DEBUG" ]; then
     set -x
 fi
-
+# shellcheck disable=SC1091
 . "$PEP_CLI_DIR/common.sh"
 
 API_URL="https://api.us-east-1.mbedcloud.com"
