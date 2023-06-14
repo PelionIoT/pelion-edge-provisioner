@@ -34,7 +34,7 @@ RUN apt-get update && apt-get install -y \
     iputils-ping \
     software-properties-common
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get install -y \
     nodejs
 
