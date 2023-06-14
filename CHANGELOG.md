@@ -5,6 +5,8 @@
 - Izuma branding (Pelion -> Izuma Networks) and related URL changes.
 - Shellcheck fixes to scripts.
 - Changes related to LmP based Edge release 2.6.0.
+- Node.JS upgrade (in Dockerfile) upgraded to v18.x
+- Added `package-lock.json` to repo & dependencies upgraded (remaining security issues related to test cases only via `request` -module).
 
 ## Pelion Edge provisioner v2.6.0
 
