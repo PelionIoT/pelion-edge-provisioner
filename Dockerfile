@@ -1,4 +1,6 @@
 # Copyright (c) 2020, Arm Limited and affiliates.
+# Copyright (c) 2023, Izuma Networks
+#
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +25,7 @@ ARG fcu_config
 COPY . .
 
 # Validate the provided fcu configuration
-RUN ./fcu-config-validator.sh $fcu_config
+RUN ./fcu-config-validator.sh "$fcu_config"
 
 RUN apt-get update && apt-get install -y \
     ssh \
@@ -32,7 +34,7 @@ RUN apt-get update && apt-get install -y \
     iputils-ping \
     software-properties-common
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get install -y \
     nodejs
 
@@ -47,7 +49,7 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -O && python3 get-pip.py
 RUN python3 -m pip install virtualenv
 
 # Install fcu
-RUN ./fcu-installer.sh $fcu_config
+RUN ./fcu-installer.sh "$fcu_config"
 
 CMD [ "node", "./api-server/index.js" ]
 

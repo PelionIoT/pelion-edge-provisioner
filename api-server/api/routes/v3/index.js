@@ -98,11 +98,11 @@ router.get('/identity', (req, res) => {
 
                 cmd_cp.on('close', function(code) {
 
-                    logger.info("Exicted with code " + code);
+                    logger.info("Exited with code " + code);
                     logger.info(stdbuf);
 
                     if(code != 0) {
-                        reject('Make sure you are running fcc-example on the gateway with ip=' + remoteAddress + ' at port=' + remotePort +'. Also inspect the pep-api-server logs to know more about this error - docker logs -f pep-api-server');
+                        reject('Make sure you are running fcc-example on the gateway with ip=' + remoteAddress + ' at port=' + remotePort +'. Also inspect the pep-api-server logs to know more about this error - docker logs -f pep-api-server\n');
                     } else {
 
                         identity.enrollmentID = stdbuf.slice(stdbuf.indexOf('enrollment id: ') + 15, stdbuf.indexOf('enrollment id: ') + 15 + 97);

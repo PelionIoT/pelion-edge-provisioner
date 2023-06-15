@@ -20,7 +20,7 @@ set -e
 if [ ! -z "$DEBUG" ]; then
     set -x
 fi
-
+# shellcheck disable=SC1091
 . "$PEP_CLI_DIR/common.sh"
 
 API_URL="https://api.us-east-1.mbedcloud.com"
@@ -31,15 +31,15 @@ LED_CONFIG="01"
 CATEGORY="production"
 FSS_INTERVAL="10s"
 FSS="false"
-HW_VERSION="arm-pelion-edge-gateway"
+HW_VERSION="izuma-edge-gateway"
 
 cli_help_get_one_identity() {
   echo "
 Usage: pep get-one-identity [<options>]
 
 Options:
-  -a <ip_or_dns>            pelion cloud api url (default: '$API_URL')
-  -g <ip_or_dns>            pelion cloud gateway service address (default: '$GW_URL')
+  -a <ip_or_dns>            Izuma cloud api url (default: '$API_URL')
+  -g <ip_or_dns>            Izuma cloud gateway service address (default: '$GW_URL')
   -s <string_value>         serial number of the gateway. There is no schema enforced on this parameter,
                             hence it can be of any length with any alphanumeric and special characters.
                             But it has to be unique, server will not provision 2 gateways with the same serial number.

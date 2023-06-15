@@ -1,7 +1,7 @@
 {
   "name": "pelion-edge-provisioner",
-  "version": "2.3.0",
-  "description": "It provisions the gateway for Pelion Edge solution to successfully and securely communicate with cloud",
+  "version": "2.6.1",
+  "description": "It provisions the gateway for Izuma Edge solution to successfully and securely communicate with cloud",
   "scripts": {
     "test": "nyc --reporter=html --reporter=text mocha ./test-cases/run-test.js",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
@@ -35,8 +35,8 @@
   },
   "devDependencies": {
     "coveralls": "^3.1.0",
-    "nyc": "^15.1.0",
-    "mocha": "^8.1.3",
-    "glob": "^7.1.6"
+    "glob": "^7.1.6",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0"
   }
 }

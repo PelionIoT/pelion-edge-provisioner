@@ -1,4 +1,8 @@
+#!/bin/bash
+#
 # Copyright (c) 2020, Arm Limited and affiliates.
+# Copyright (c) 2023, Izuma Networks
+#
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,14 +17,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
-
 set -e
 
-if [ ! -z "$DEBUG" ]; then
+if [ -n "$DEBUG" ]; then
     set -x
 fi
 
+# shellcheck disable=SC1091
 . "$PEP_CLI_DIR/common.sh"
 
 cli_help_get_enrollment_id() {
@@ -33,13 +36,13 @@ Options:
   -h                 output usage information"
 }
 
-[ ! -n "$2" ] && cli_help_get_enrollment_id && exit 1
+[ -z "$2" ] && cli_help_get_enrollment_id && exit 1
 
 OPTIND=2
 
 while getopts 's:hv' opt; do
     case "$opt" in
-        h|-help)
+        h)
             cli_help_get_enrollment_id
             exit 0
             ;;
@@ -50,13 +53,18 @@ while getopts 's:hv' opt; do
             VERBOSE="-v"
             ;;
         *)
-            cli_help_get_enrollment_id
-            exit 1
+            if [[ "$opt" == "-help" ]]; then
+                cli_help_get_enrollment_id
+                exit 0
+            else
+                cli_help_get_enrollment_id
+                exit 1
+            fi
             ;;
     esac
 done
 
-shift "$(($OPTIND-1))"
+shift OPTIND-1
 
 if [ -z "$SERIAL_NUMBER" ]; then
     cli_error "-s <serial_number> not specified!"
@@ -66,4 +74,4 @@ fi
 
 curl -G \
     --data-urlencode "serialNumber=$SERIAL_NUMBER" \
-    $PEP_SERVER_URL/$API_VERSION/enrollment-id $VERBOSE
+    "$PEP_SERVER_URL/$API_VERSION/enrollment-id" "$VERBOSE"

@@ -1,5 +1,13 @@
 # Release notes
 
+## Izuma Edge provisioner v2.6.1
+
+- Izuma branding (Pelion -> Izuma Networks) and related URL changes.
+- Shellcheck fixes to scripts.
+- Changes related to LmP based Edge release 2.6.0.
+- Node.JS upgrade (in Dockerfile) upgraded to v18.x
+- Added `package-lock.json` to repo & dependencies upgraded (remaining security issues related to test cases only via `request` -module).
+
 ## Pelion Edge provisioner v2.6.0
 
 ### Bug fixes
@@ -58,9 +66,9 @@ If Factory Configurator Utility (FCU) fails to provision the gateway, the identi
 ## Pelion Edge provisioner v2.1.0
 
 ### Additions
-- The gateway initiates certificate injection, instead of [Factory Configurator Utility (FCU)](https://www.pelion.com/docs/device-management/current/provisioning-process/index.html), which initiates the injection in the [default Device Management provisioning flow](https://www.pelion.com/docs/device-management/current/provisioning-process/index.html).
-- The Pelion Edge provisioning (pep) tool records the enrollment identity and configuration information of all provisioned gateways.
-- Integrates default Pelion Device Management provisioning tools - Factory Configurator Utility (FCU) and Factory Configurator Client (FCC).
+- The gateway initiates certificate injection, instead of [Factory Configurator Utility (FCU)](https://developer.izumanetworks.com/docs/device-management/current/provisioning-process/index.html), which initiates the injection in the [default Device Management provisioning flow](https://developer.izumanetworks.com/docs/device-management/current/provisioning-process/index.html).
+- The Izuma Edge provisioning (pep) tool records the enrollment identity and configuration information of all provisioned gateways.
+- Integrates default Izuma Device Management provisioning tools - Factory Configurator Utility (FCU) and Factory Configurator Client (FCC).
 - Gateway provisioning in production mode.
 - Pep API server hosts REST calls:
 	- `GET /identity` to create and dispatch new gateway identities.
