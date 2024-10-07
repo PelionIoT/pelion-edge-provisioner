@@ -21,4 +21,6 @@ jobs:
         with:
           repository: 'PelionIoT/scripts-internal'
           token: ${{ secrets.ACCESS_TOKEN }}
-      - run: ../scripts-internal/pysh-check/pysh-check.sh --workdir .
+          path: 'scripts-internal'
+      - run: touch scripts-internal/.pyshcheck
+      - run: scripts-internal/pysh-check/pysh-check.sh --workdir .
