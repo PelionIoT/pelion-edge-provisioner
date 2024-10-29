@@ -1,6 +1,8 @@
 name: Pysh-check
 run-name: ${{ github.actor }} Pull Request pysh-check
-on: [push]
+on: 
+  push:
+  workflow_dispatch:
 
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
@@ -11,15 +13,14 @@ jobs:
   run-pysh-check:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # Install pyshcheck tooling
       - name: Install (apt-get) dependencies
         run: sudo apt-get install black pycodestyle pydocstyle shellcheck python3
-      # git instead of rules to use access token
-      - name: Clone scripts-internal
-        run: |
-          git config --global url."https://${{ secrets.ACCESS_TOKEN }}@github.com/".insteadOf "git@github.com:"
-          git config --global url."https://${{ secrets.ACCESS_TOKEN }}@github".insteadOf "https://github"
-          git clone git@github.com:PelionIoT/scripts-internal.git
-          echo . >scripts-internal/.nopyshcheck
+      - uses: actions/checkout@v4
+        with:
+          repository: 'PelionIoT/scripts-internal'
+          token: ${{ secrets.ACCESS_TOKEN }}
+          path: 'scripts-internal'
+      - run: touch scripts-internal/.pyshcheck
       - run: scripts-internal/pysh-check/pysh-check.sh --workdir .

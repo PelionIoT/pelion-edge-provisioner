@@ -1,0 +1,111 @@
+name: build
+
+on:
+  push:
+    paths-ignore:
+        - '**/*.md'  
+  workflow_dispatch:
+  schedule:
+  # Once in week 3:33 on Sunday (0 and 7 are Sunday)
+    - cron: '33 3 * * 0'
+
+# This allows a subsequently queued workflow run to interrupt previous runs
+concurrency:
+  group: pep-build-${{ github.event.pull_request.head.label || github.head_ref || github.ref }} 
+  cancel-in-progress: true
+
+jobs:
+  pep-build:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install docker-compose
+        run: |
+            sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+            dver=$(docker-compose version)
+            echo "$dver"
+            echo "$dver" >> $GITHUB_STEP_SUMMARY
+      - name: Configure fcu
+        run: |
+            mkdir fcu_config
+            cd fcu_config
+            echo "${{ secrets.FCU_KEYS_TAR_GZ_B64 }}" > fcu_keys.tar.gz.b64
+            base64 -d fcu_keys.tar.gz.b64 > fcu_keys.tar.gz
+            tar -xzf fcu_keys.tar.gz
+      - name: Download the factory_configurator_utility.zip (as the repo does not have it)
+        run: |
+            cd fcu_config
+            mkdir config
+            cp fcu.yml config/fcu.yml
+            curl -X GET \
+                https://api.us-east-1.mbedcloud.com/downloads/fcu/factory_configurator_utility.zip \
+                -H "Authorization: Bearer ${{ secrets.EDGE_EXAMPLES_API_KEY }}" \
+                -o factory_configurator_utility.zip
+    
+      - name: Build
+        run: docker-compose build --build-arg fcu_config=fcu_config
+      - name: Start the docker
+        run: | 
+            docker-compose up &
+      - name: Check the processes
+        run: |
+            retries=30
+            max_attempts=6 # 60 seconds
+            remaining_checks=${max_attempts}
+            attempt=1
+
+            while [[ "${attempt}" -le "${max_attempts}" ]]; do
+                procs=$(docker-compose ps --services)
+                if [[ -n "${procs}" ]]; then
+                    echo "docker-compose up is running with $procs..."
+                    break
+                fi
+                if [[ "${attempt}" -eq "${max_attempts}" ]]; then
+                    echo "FAIL: docker-compose up not getting started..."
+                    return 1
+                fi
+                attempt=$((attempt + 1))
+                sleep 10
+            done
+            procs=$(docker-compose ps)
+            echo "# docker-compose ps:"
+            echo "$procs"
+            # Check we find mongo in $procs
+            mongo=$(echo "$procs" | grep mongo)
+            if [[ -z "$mongo" ]]; then
+                echo "Failed to start mongoDB"
+                exit 1
+            fi
+            state=$(echo "$mongo" | grep "Up")
+            if [[ -z "$state" ]]; then
+                echo "Failed to get mongoDB container up."
+                exit 1
+            fi
+            api=$(echo "$procs" | grep api-server)
+            if [[ -z "$api" ]]; then
+                echo "Failed to start api-server"
+                exit 1
+            fi
+            state=$(echo "$api" | grep "Up")
+            if [[ -z "$state" ]]; then
+                echo "Failed to get api-server container up."
+                exit 1
+            fi
+
+      - name: Get the logs
+        run: |
+            logs=$(docker-compose logs)
+            echo "# docker-compose logs:" >> $GITHUB_STEP_SUMMARY
+            echo $logs >> $GITHUB_STEP_SUMMARY
+#  MongoDB only creates the database once you inject some data to it
+#      - name: Inspect mongo db volume
+#        run: |
+#            mong=$(docker volume inspect pelion-edge-provisioner_mongo_data)
+#            echo "# docker volume inspect pelion-edge-provisioner_mongo_data:" >> $GITHUB_STEP_SUMMARY
+#            echo $mong >> $GITHUB_STEP_SUMMARY
+      - name: Stop the container
+        run: docker-compose down
+
